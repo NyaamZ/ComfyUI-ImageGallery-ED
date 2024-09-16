@@ -8,7 +8,7 @@ Custom javascript extensions for better UX for ComfyUI. It's convenient for chec
 
  - Double click on image to open.
 
- - Additional features
+ ## Additional features
       <li>With mouse wheel - zoom in and out</li>
       <li>Send to clipspace.</li>
       <li>Image draggable.</li>
