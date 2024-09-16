@@ -9,11 +9,11 @@ Custom javascript extensions for better UX for ComfyUI. It's convenient for chec
  - Double click on image to open.
 
  ## Additional features
-      With mouse wheel - zoom in and out
-      Send to clipspace.</li>
-      Image draggable.</li>
-      Send image (to LoadImage 💬ED)
-      Keyboard shortcuts - ▲ zoom in, ▼ zoom out, ◀, ▶ next & prev image, Esc exit, C or spacebar: copy & send, M: mask editor, WASD moving image 
+ - With mouse wheel - zoom in and out
+ - Send to clipspace.
+ - Image draggable.
+ - Send image (to LoadImage 💬ED)
+ - Keyboard shortcuts - ▲ zoom in, ▼ zoom out, ◀, ▶ next & prev image, Esc exit, C or spacebar: copy & send, M: mask editor, WASD moving image 
 
 
 ![tasty-knives-retire-104-198-110-184 loca lt_ (1)](https://github.com/ailex000/ComfyUI-Extensions/assets/43065065/5a5b356a-93ff-47fa-926d-b9b02c630adc)
