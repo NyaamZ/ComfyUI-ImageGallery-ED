@@ -6,7 +6,16 @@ Custom javascript extensions for better UX for ComfyUI. It's convenient for chec
 
 ## Image Gallery
 
-Double click on image to open.
+ - Double click on image to open.
+
+ - Additional features
+
+<li>With mouse wheel - zoom in and out</li>
+<li>Send to clipspace.</li>
+<li>Image draggable.</li>
+<li>Send image (to LoadImage 💬ED)</li>
+
+ - Keyboard shortcuts - ▲ zoom in, ▼ zoom out, ◀, ▶ next & prev image, Esc exit, C or spacebar: copy & send, M: mask editor, WASD moving image
 
 
 ![tasty-knives-retire-104-198-110-184 loca lt_ (1)](https://github.com/ailex000/ComfyUI-Extensions/assets/43065065/5a5b356a-93ff-47fa-926d-b9b02c630adc)
