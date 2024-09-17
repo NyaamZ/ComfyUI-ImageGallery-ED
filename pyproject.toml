@@ -1,0 +1,14 @@
+[project]
+name = "comfyui-imagegallery-ed"
+description = "Custom javascript extensions for better UX for ComfyUI. Double click on image to open. It's convenient for checking images."
+version = "1.0.0"
+license = {file = "LICENSE"}
+
+[project.urls]
+Repository = "https://github.com/NyaamZ/ComfyUI-ImageGallery-ED"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "ComfyUI-ImageGallery-ED"
+Icon = ""
