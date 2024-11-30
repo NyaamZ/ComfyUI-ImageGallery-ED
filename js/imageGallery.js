@@ -51,52 +51,146 @@ var styles = `
     display: block;
 }
 
-.comfy-carousel-box .prev:before,
-.comfy-carousel-box .next:before {
-    color: #fff;
-    font-size: 100px;
-    position: absolute;
-    top: 35%;
-    cursor: pointer;
+@keyframes fadeInLeft {
+    0% {
+        opacity: 0;
+        transform: translate3d(-100%, 0, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translateZ(0);
+    }
 }
 
-.comfy-carousel-box .prev:before {
-    content: url("data:image/svg+xml,%3Csvg width='25' height='25' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg' class='p-icon p-galleria-prev-icon' aria-hidden='true' data-pc-section='previcon'%3E%3Cpath d='M9.61296 13C9.50997 13.0005 9.40792 12.9804 9.3128 12.9409C9.21767 12.9014 9.13139 12.8433 9.05902 12.7701L3.83313 7.54416C3.68634 7.39718 3.60388 7.19795 3.60388 6.99022C3.60388 6.78249 3.68634 6.58325 3.83313 6.43628L9.05902 1.21039C9.20762 1.07192 9.40416 0.996539 9.60724 1.00012C9.81032 1.00371 10.0041 1.08597 10.1477 1.22959C10.2913 1.37322 10.3736 1.56698 10.3772 1.77005C10.3808 1.97313 10.3054 2.16968 10.1669 2.31827L5.49496 6.99022L10.1669 11.6622C10.3137 11.8091 10.3962 12.0084 10.3962 12.2161C10.3962 12.4238 10.3137 12.6231 10.1669 12.7701C10.0945 12.8433 10.0083 12.9014 9.91313 12.9409C9.81801 12.9804 9.71596 13.0005 9.61296 13Z' fill='white'%3E%3C/path%3E%3C/svg%3E");
-    left: 18px;
+.comfy-carousel-box .slides img.enter {
+	animation: fadeInLeft 0.7s;
 }
 
-.comfy-carousel-box .next:before {
-    content: url("data:image/svg+xml,%3Csvg width='25' height='25' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg' class='p-icon p-galleria-next-icon' aria-hidden='true' data-pc-section='nexticon'%3E%3Cpath d='M4.38708 13C4.28408 13.0005 4.18203 12.9804 4.08691 12.9409C3.99178 12.9014 3.9055 12.8433 3.83313 12.7701C3.68634 12.6231 3.60388 12.4238 3.60388 12.2161C3.60388 12.0084 3.68634 11.8091 3.83313 11.6622L8.50507 6.99022L3.83313 2.31827C3.69467 2.16968 3.61928 1.97313 3.62287 1.77005C3.62645 1.56698 3.70872 1.37322 3.85234 1.22959C3.99596 1.08597 4.18972 1.00371 4.3928 1.00012C4.59588 0.996539 4.79242 1.07192 4.94102 1.21039L10.1669 6.43628C10.3137 6.58325 10.3962 6.78249 10.3962 6.99022C10.3962 7.19795 10.3137 7.39718 10.1669 7.54416L4.94102 12.7701C4.86865 12.8433 4.78237 12.9014 4.68724 12.9409C4.59212 12.9804 4.49007 13.0005 4.38708 13Z' fill='white'%3E%3C/path%3E%3C/svg%3E");
-    right: 18px;
+@keyframes fadeOutRight {
+    0% {
+        opacity: 1;
+        transform: translateZ(0);
+    }
+    to {
+        opacity: 0;
+        transform: translate3d(100%, 0, 0);
+    }
 }
 
-.comfy-carousel-box .close:before {
-	color: #fff;
+.comfy-carousel-box .slides img.exit {
+	animation: fadeOutRight 0.7s;
+}
+
+
+
+.comfy-carousel-box .ig-ed-prev,
+.comfy-carousel-box .ig-ed-next,
+.comfy-carousel-box .ig-ed-close,
+.comfy-carousel-box .ig-ed-copy,
+.comfy-carousel-box .ig-ed-maskedit {
 	position: absolute;
-    content: url("data:image/svg+xml,%3Csvg width='25' height='25' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg' class='p-icon p-galleria-close-icon' aria-hidden='true' data-pc-section='closeicon'%3E%3Cpath d='M8.01186 7.00933L12.27 2.75116C12.341 2.68501 12.398 2.60524 12.4375 2.51661C12.4769 2.42798 12.4982 2.3323 12.4999 2.23529C12.5016 2.13827 12.4838 2.0419 12.4474 1.95194C12.4111 1.86197 12.357 1.78024 12.2884 1.71163C12.2198 1.64302 12.138 1.58893 12.0481 1.55259C11.9581 1.51625 11.8617 1.4984 11.7647 1.50011C11.6677 1.50182 11.572 1.52306 11.4834 1.56255C11.3948 1.60204 11.315 1.65898 11.2488 1.72997L6.99067 5.98814L2.7325 1.72997C2.59553 1.60234 2.41437 1.53286 2.22718 1.53616C2.03999 1.53946 1.8614 1.61529 1.72901 1.74767C1.59663 1.88006 1.5208 2.05865 1.5175 2.24584C1.5142 2.43303 1.58368 2.61419 1.71131 2.75116L5.96948 7.00933L1.71131 11.2675C1.576 11.403 1.5 11.5866 1.5 11.7781C1.5 11.9696 1.576 12.1532 1.71131 12.2887C1.84679 12.424 2.03043 12.5 2.2219 12.5C2.41338 12.5 2.59702 12.424 2.7325 12.2887L6.99067 8.03052L11.2488 12.2887C11.3843 12.424 11.568 12.5 11.7594 12.5C11.9509 12.5 12.1346 12.424 12.27 12.2887C12.4053 12.1532 12.4813 11.9696 12.4813 11.7781C12.4813 11.5866 12.4053 11.403 12.27 11.2675L8.01186 7.00933Z' fill='white'%3E%3C/path%3E%3C/svg%3E");
-	top: 18px;
-    right: 18px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
     cursor: pointer;
+	margin: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    color:  var(--p-surface-50);
+	padding: 0;
+	border: none;
+	user-select: none;
+	cursor: pointer;
+    outline-color: transparent;
+	transition: background 0.2s;
 }
 
-.comfy-carousel-box .copy:before {
-	color: #fff;
-    font-size: 50px;
-	position: absolute;
-    content: '📇';
+.comfy-carousel-box .ig-ed-prev,
+.comfy-carousel-box .ig-ed-next,
+.comfy-carousel-box .ig-ed-close {
+	width: 3rem;
+	height: 3rem;
+	border-radius: 50%;
+}
+
+.comfy-carousel-box .ig-ed-prev {
+	top: 45%;
+    left: 0;
+}
+
+.comfy-carousel-box .ig-ed-next {
+	top: 45%;
+    right: 0;
+}
+
+.comfy-carousel-box .ig-ed-close {
+	top: 0;
+    right: 0;
+}
+
+.comfy-carousel-box .ig-ed-copy,
+.comfy-carousel-box .ig-ed-maskedit {
+	width: 3.2rem;
+	height: 3.2rem;
 	bottom: 6%;
     right: 6%;
-    cursor: pointer;
+	border-radius: 10%;	
 }
 
-.comfy-carousel-box .maskedit:before {
-	color: #fff;
-    font-size: 50px;
-	position: absolute;
-    content: '🖌️';
-	bottom: 6%;
-    right: 6%;
-    cursor: pointer;
+.comfy-carousel-box .ig-ed-prev:hover,
+.comfy-carousel-box .ig-ed-next:hover,
+.comfy-carousel-box .ig-ed-close:hover,
+.comfy-carousel-box .ig-ed-copy-icon:hover,
+.comfy-carousel-box .ig-ed-maskedit-icon:hover {
+    background:  rgba(255, 255, 255, 0.2);
+    color: var(--p-surface-0);
+}
+
+.comfy-carousel-box .ig-ed-prev:focus-visible,
+.comfy-carousel-box .ig-ed-next:focus-visible,
+.comfy-carousel-box .ig-ed-close:focus-visible,
+.comfy-carousel-box .ig-ed-copy-icon:focus-visible,
+.comfy-carousel-box .ig-ed-maskedit-icon:focus-visible {
+    box-shadow:  var(--p-focus-ring-shadow);
+	outline:  var(--p-focus-ring-width) var(--p-focus-ring-style) var(--p-focus-ring-color);
+    outline-offset:  var(--p-focus-ring-offset);
+}
+
+.comfy-carousel-box .ig-ed-prev-icon,
+.comfy-carousel-box .ig-ed-next-icon,
+.comfy-carousel-box .ig-ed-close-icon {
+	font-size: 1.5rem;
+    width: 1.5rem;
+	height: 1.5rem;
+}
+
+.comfy-carousel-box .ig-ed-copy-icon,
+.comfy-carousel-box .ig-ed-maskedit-icon {
+    font-size: 1.5rem;
+	width: 3.2rem;
+	height: 3.2rem;
+}
+
+.comfy-carousel-box .ig-ed-prev-icon {
+    content: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg' class='ig-ed-prev-icon-svg' aria-hidden='true' data-pc-section='previcon'%3E%3Cpath d='M9.61296 13C9.50997 13.0005 9.40792 12.9804 9.3128 12.9409C9.21767 12.9014 9.13139 12.8433 9.05902 12.7701L3.83313 7.54416C3.68634 7.39718 3.60388 7.19795 3.60388 6.99022C3.60388 6.78249 3.68634 6.58325 3.83313 6.43628L9.05902 1.21039C9.20762 1.07192 9.40416 0.996539 9.60724 1.00012C9.81032 1.00371 10.0041 1.08597 10.1477 1.22959C10.2913 1.37322 10.3736 1.56698 10.3772 1.77005C10.3808 1.97313 10.3054 2.16968 10.1669 2.31827L5.49496 6.99022L10.1669 11.6622C10.3137 11.8091 10.3962 12.0084 10.3962 12.2161C10.3962 12.4238 10.3137 12.6231 10.1669 12.7701C10.0945 12.8433 10.0083 12.9014 9.91313 12.9409C9.81801 12.9804 9.71596 13.0005 9.61296 13Z' fill='white'%3E%3C/path%3E%3C/svg%3E");
+}
+
+.comfy-carousel-box .ig-ed-next-icon {
+    content: url("data:image/svg+xml,%3Csvg width='25' height='25' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg' class='ig-ed-next-icon-svg' aria-hidden='true' data-pc-section='nexticon'%3E%3Cpath d='M4.38708 13C4.28408 13.0005 4.18203 12.9804 4.08691 12.9409C3.99178 12.9014 3.9055 12.8433 3.83313 12.7701C3.68634 12.6231 3.60388 12.4238 3.60388 12.2161C3.60388 12.0084 3.68634 11.8091 3.83313 11.6622L8.50507 6.99022L3.83313 2.31827C3.69467 2.16968 3.61928 1.97313 3.62287 1.77005C3.62645 1.56698 3.70872 1.37322 3.85234 1.22959C3.99596 1.08597 4.18972 1.00371 4.3928 1.00012C4.59588 0.996539 4.79242 1.07192 4.94102 1.21039L10.1669 6.43628C10.3137 6.58325 10.3962 6.78249 10.3962 6.99022C10.3962 7.19795 10.3137 7.39718 10.1669 7.54416L4.94102 12.7701C4.86865 12.8433 4.78237 12.9014 4.68724 12.9409C4.59212 12.9804 4.49007 13.0005 4.38708 13Z' fill='white'%3E%3C/path%3E%3C/svg%3E");
+}
+
+.comfy-carousel-box .ig-ed-close-icon {
+    content: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg' class='ig-ed-close-icon-svg' aria-hidden='true' data-pc-section='closeicon'%3E%3Cpath d='M8.01186 7.00933L12.27 2.75116C12.341 2.68501 12.398 2.60524 12.4375 2.51661C12.4769 2.42798 12.4982 2.3323 12.4999 2.23529C12.5016 2.13827 12.4838 2.0419 12.4474 1.95194C12.4111 1.86197 12.357 1.78024 12.2884 1.71163C12.2198 1.64302 12.138 1.58893 12.0481 1.55259C11.9581 1.51625 11.8617 1.4984 11.7647 1.50011C11.6677 1.50182 11.572 1.52306 11.4834 1.56255C11.3948 1.60204 11.315 1.65898 11.2488 1.72997L6.99067 5.98814L2.7325 1.72997C2.59553 1.60234 2.41437 1.53286 2.22718 1.53616C2.03999 1.53946 1.8614 1.61529 1.72901 1.74767C1.59663 1.88006 1.5208 2.05865 1.5175 2.24584C1.5142 2.43303 1.58368 2.61419 1.71131 2.75116L5.96948 7.00933L1.71131 11.2675C1.576 11.403 1.5 11.5866 1.5 11.7781C1.5 11.9696 1.576 12.1532 1.71131 12.2887C1.84679 12.424 2.03043 12.5 2.2219 12.5C2.41338 12.5 2.59702 12.424 2.7325 12.2887L6.99067 8.03052L11.2488 12.2887C11.3843 12.424 11.568 12.5 11.7594 12.5C11.9509 12.5 12.1346 12.424 12.27 12.2887C12.4053 12.1532 12.4813 11.9696 12.4813 11.7781C12.4813 11.5866 12.4053 11.403 12.27 11.2675L8.01186 7.00933Z' fill='white'%3E%3C/path%3E%3C/svg%3E");
+}
+
+.comfy-carousel-box .ig-ed-copy-icon {
+    content: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3C!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools --%3E%3Csvg fill='white' width='36px' height='36px' viewBox='0 0 36 36' version='1.1' preserveAspectRatio='xMidYMid meet' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Ctitle%3Ecopy-to-clipboard-line%3C/title%3E%3Cpath d='M22.6,4H21.55a3.89,3.89,0,0,0-7.31,0H13.4A2.41,2.41,0,0,0,11,6.4V10H25V6.4A2.41,2.41,0,0,0,22.6,4ZM23,8H13V6.25A.25.25,0,0,1,13.25,6h2.69l.12-1.11A1.24,1.24,0,0,1,16.61,4a2,2,0,0,1,3.15,1.18l.09.84h2.9a.25.25,0,0,1,.25.25Z' class='clr-i-outline clr-i-outline-path-1'%3E%3C/path%3E%3Cpath d='M33.25,18.06H21.33l2.84-2.83a1,1,0,1,0-1.42-1.42L17.5,19.06l5.25,5.25a1,1,0,0,0,.71.29,1,1,0,0,0,.71-1.7l-2.84-2.84H33.25a1,1,0,0,0,0-2Z' class='clr-i-outline clr-i-outline-path-2'%3E%3C/path%3E%3Cpath d='M29,16h2V6.68A1.66,1.66,0,0,0,29.35,5H27.08V7H29Z' class='clr-i-outline clr-i-outline-path-3'%3E%3C/path%3E%3Cpath d='M29,31H7V7H9V5H6.64A1.66,1.66,0,0,0,5,6.67V31.32A1.66,1.66,0,0,0,6.65,33H29.36A1.66,1.66,0,0,0,31,31.33V22.06H29Z' class='clr-i-outline clr-i-outline-path-4'%3E%3C/path%3E%3Crect x='0' y='0' width='36' height='36' fill-opacity='0'/%3E%3C/svg%3E");
+	padding: 0.4rem;
+}
+
+.comfy-carousel-box .ig-ed-maskedit-icon {
+    content: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3C!-- Svg Vector Icons : http://www.onlinewebfonts.com/icon --%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'%3E%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 256 256' enable-background='new 0 0 256 256' xml:space='preserve'%3E%3Cmetadata%3E Svg Vector Icons : http://www.onlinewebfonts.com/icon %3C/metadata%3E%3Cg%3E%3Cg%3E%3Cpath fill='white' d='M238.6,245.9H17.4c-4.1,0-7.4-3.3-7.4-7.4l0,0c0-4.1,3.3-7.4,7.4-7.4h221.3c4.1,0,7.4,3.3,7.4,7.4l0,0C246,242.6,242.7,245.9,238.6,245.9z'/%3E%3Cpath fill='white' d='M227,37.2l-22.4-22.4c-3.1-3.1-7.2-4.7-11.3-4.7s-8.2,1.6-11.3,4.7L71.3,125.5l-30.5,64.9c-2.6,5.6,1.8,11.4,7.2,11.4c1.1,0,2.3-0.3,3.5-0.8l64.9-30.5L227.1,59.9C233.3,53.6,233.3,43.5,227,37.2z M216.6,49.4l-18.3,18.3l9.8,9.8L197.7,88l-9.8-9.8l-80.1,80.1l-45.7,21.5l21.5-45.7l80.2-80.2l-10-10l10.5-10.5l10,10l18.3-18.3c0.1-0.1,0.4-0.4,0.9-0.4c0.5,0,0.8,0.3,0.9,0.4l22.4,22.4c0.1,0.1,0.4,0.4,0.4,0.9C217,49.1,216.7,49.3,216.6,49.4z'/%3E%3Cpath fill='white' d='M164.1,33.5l-10.5,10.5l10,10l24.2,24.2l9.8,9.8l10.4-10.4l-9.8-9.8l-24.2-24.2L164.1,33.5z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+	padding: 0.5rem;
 }
 
 .comfy-carousel-box .dots img {
@@ -142,6 +236,15 @@ class ComfyCarousel extends ComfyDialog {
   selectImage(slide) {
     let active = this.getActive();
 	this.initializePanZoom(slide);
+	
+	if (this.is_enter) {
+	  slide.classList.add('enter');
+	  setTimeout(() => {        
+		slide.classList.remove('enter');
+		this.is_enter = false;
+      }, 700);	
+	}
+	
     if (active) {	  
       active.classList.remove('shown');
       active._dot.classList.remove('active');
@@ -224,10 +327,10 @@ class ComfyCarousel extends ComfyDialog {
 	const slidess = [...active.parentNode.children];
     const imageIndex = slidess.indexOf(active);	
 	//console.log("ED_log image_index:" + imageIndex);
-	image_gallery_node.imageIndex = imageIndex;
-    ComfyApp.copyToClipspace(image_gallery_node);
+	this.image_gallery_node.imageIndex = imageIndex;
+    ComfyApp.copyToClipspace(this.image_gallery_node);
 	ComfyApp.clipspace_return_node = null;
-	image_gallery_node.setDirtyCanvas(true);
+	this.image_gallery_node.setDirtyCanvas(true);
 	let load_image_ed = app.graph._nodes.find((n) => n.type === "Load Image 💬ED");
 	if (load_image_ed) ComfyApp.pasteFromClipspace(load_image_ed);
 	
@@ -240,10 +343,10 @@ class ComfyCarousel extends ComfyDialog {
 	const slidess = [...active.parentNode.children];
     const imageIndex = slidess.indexOf(active);	
 	//console.log("ED_log image_index:" + imageIndex);
-	image_gallery_node.imageIndex = imageIndex;
-    ComfyApp.copyToClipspace(image_gallery_node);
-	ComfyApp.clipspace_return_node = image_gallery_node;
-	image_gallery_node.setDirtyCanvas(true);
+	this.image_gallery_node.imageIndex = imageIndex;
+    ComfyApp.copyToClipspace(this.image_gallery_node);
+	ComfyApp.clipspace_return_node = this.image_gallery_node;
+	this.image_gallery_node.setDirtyCanvas(true);
 	this.close();
 	ComfyApp.open_maskeditor();
     e.stopPropagation();
@@ -280,18 +383,22 @@ class ComfyCarousel extends ComfyDialog {
       this.pan_y = this.pan_y + 20;
       this.invalidatePanZoom();
 	}
-    else if (!is_load_image_node && (e.key == " " || e.key == "Spacebar" || e.key == 32 || e.key == "C" || e.key == "c"))
+    else if (!this.is_load_image_node && (e.key == " " || e.key == "Spacebar" || e.key == 32 || e.key == "C" || e.key == "c"))
       this.copyToClip(e);
-    else if (is_load_image_node && (e.key == "M" || e.key == "m"))
+    else if (this.is_load_image_node && (e.key == "M" || e.key == "m"))
       this.openMaskEditor(e);
   }
   
-  show(images, activeIndex) {
+  show(images, activeIndex, node) {
     let slides = [];
     let dots = [];
-	this.zoom_ratio = 1.0;
-	this.pan_x = 0;
-	this.pan_y = 0;
+    this.image_gallery_node = node;
+    this.is_load_image_node = (node.type.indexOf("Load Image") != -1);
+    this.is_enter = true;
+    this.zoom_ratio = 1.0;
+    this.pan_x = 0;
+    this.pan_y = 0;
+	
     for (let image of images) {
       let slide = image.cloneNode(true);
 	  slide.draggable = false;
@@ -310,26 +417,26 @@ class ComfyCarousel extends ComfyDialog {
     }
 	
 	let carousel;
-	if (is_load_image_node) {
+	if (this.is_load_image_node) {
 		carousel = $el("div.comfy-carousel-box", {  }, [
 		$el("div.slides", { $: (el) => el.addEventListener('pointermove', (e) => this.pointMoveEvent(e)), }, slides),
 		//$el("div.slides", {  }, slides),
 		$el("div.dots", {  }, dots),
-		$el("a.prev", { $: (el) => el.addEventListener('click', (e) => this.prevSlide(e)), }),
-		$el("a.next", { $: (el) => el.addEventListener('click', (e) => this.nextSlide(e)), }),
-		$el("a.close", { $: (el) => el.addEventListener('click', (e) => this.close()), }),
+		$el("button.ig-ed-prev", { $: (el) => el.addEventListener('click', (e) => this.prevSlide(e)), }, [ $el('icon.ig-ed-prev-icon', {  }, )]),
+		$el("button.ig-ed-next", { $: (el) => el.addEventListener('click', (e) => this.nextSlide(e)), }, [ $el('icon.ig-ed-next-icon', {  }, )]),
+		$el("button.ig-ed-close", { $: (el) => el.addEventListener('click', (e) => this.close()), }, [ $el('icon.ig-ed-close-icon', {  }, )]),
 		//$el("a.copy", { $: (el) => el.addEventListener('click', (e) => this.copyToClip(e)), }),
-		$el("a.maskedit", { $: (el) => el.addEventListener('click', (e) => this.openMaskEditor(e)), }),
+		$el("button.ig-ed-maskedit", { $: (el) => el.addEventListener('click', (e) => this.openMaskEditor(e)), }, [ $el('icon.ig-ed-maskedit-icon', {  }, )]),
 		]);
 	}
 	else{
 		carousel = $el("div.comfy-carousel-box", {  }, [
 		$el("div.slides", { $: (el) => el.addEventListener('pointermove', (e) => this.pointMoveEvent(e)), }, slides),
 		$el("div.dots", {  }, dots),
-		$el("a.prev", { $: (el) => el.addEventListener('click', (e) => this.prevSlide(e)), }),
-		$el("a.next", { $: (el) => el.addEventListener('click', (e) => this.nextSlide(e)), }),
-		$el("a.close", { $: (el) => el.addEventListener('click', (e) => this.close()), }),
-		$el("a.copy", { $: (el) => el.addEventListener('click', (e) => this.copyToClip(e)), }),
+		$el("button.ig-ed-prev", { $: (el) => el.addEventListener('click', (e) => this.prevSlide(e)), }, [ $el('icon.ig-ed-prev-icon', {  }, )]),
+		$el("button.ig-ed-next", { $: (el) => el.addEventListener('click', (e) => this.nextSlide(e)), }, [ $el('icon.ig-ed-next-icon', {  }, )]),
+		$el("button.ig-ed-close", { $: (el) => el.addEventListener('click', (e) => this.close()), }, [ $el('icon.ig-ed-close-icon', {  }, )]),
+		$el("button.ig-ed-copy", { $: (el) => el.addEventListener('click', (e) => this.copyToClip(e)), }, [ $el('icon.ig-ed-copy-icon', {  }, )]),
 		]);
 	}
 	
@@ -339,13 +446,14 @@ class ComfyCarousel extends ComfyDialog {
     document.activeElement?.blur();
   }
   close() {
+	let active = this.getActive();
+    active.classList.add('exit');
     document.removeEventListener("keydown", this.onKeydown);
-    super.close();
+    setTimeout(() => {
+      super.close();
+    }, 500);	
   }
 }
-
-let image_gallery_node;
-let is_load_image_node;
 
 app.registerExtension({
   name: "Comfy.ImageGallery",
@@ -381,9 +489,7 @@ app.registerExtension({
           imageIndex = this.imageIndex;
         else if (this.overIndex !== null)
           imageIndex = this.overIndex;
-        image_gallery_node = this;
-		is_load_image_node = (image_gallery_node.type.indexOf("Load Image") != -1);
-		app.ui.carousel.show(this.imgs, imageIndex);
+		app.ui.carousel.show(this.imgs, imageIndex, this);
       }
 
       if (origOnDblClick)
