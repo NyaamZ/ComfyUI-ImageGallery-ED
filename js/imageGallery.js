@@ -63,7 +63,7 @@ var styles = `
 }
 
 .comfy-carousel-box .slides img.enter {
-	animation: fadeInLeft 0.7s;
+	animation: fadeInLeft 0.5s;
 }
 
 @keyframes fadeOutRight {
@@ -78,7 +78,7 @@ var styles = `
 }
 
 .comfy-carousel-box .slides img.exit {
-	animation: fadeOutRight 0.7s;
+	animation: fadeOutRight 0.5s;
 }
 
 
@@ -242,7 +242,7 @@ class ComfyCarousel extends ComfyDialog {
 	  setTimeout(() => {        
 		slide.classList.remove('enter');
 		this.is_enter = false;
-      }, 700);	
+      }, 500);	
 	}
 	
     if (active) {	  
@@ -451,7 +451,7 @@ class ComfyCarousel extends ComfyDialog {
     document.removeEventListener("keydown", this.onKeydown);
     setTimeout(() => {
       super.close();
-    }, 500);	
+    }, 350);	
   }
 }
 
