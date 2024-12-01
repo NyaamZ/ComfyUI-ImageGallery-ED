@@ -220,11 +220,8 @@ class ComfyCarousel extends ComfyDialog {
     super();
     this.element.classList.remove("comfy-modal");
     this.element.classList.add("comfy-carousel");
-    //this.element.addEventListener('click', (e) => {  });
+    this.element.addEventListener('click', (e) => this.clickExit(e));
 	this.element.addEventListener('wheel', (e) => this.zoomInOut(e));
-	//this.element.addEventListener('pointermove', (e) => this.pointMoveEvent(e));
-	this.element.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
-	this.element.addEventListener('pointerup', (e) => this.handlePointerUp(e));
     this.onKeydown = this.onKeydown.bind(this);
   }
   createButtons() {
@@ -252,6 +249,11 @@ class ComfyCarousel extends ComfyDialog {
 
     slide.classList.add('shown');
     slide._dot.classList.toggle('active');
+  }
+  clickExit(e) {
+	if(e.target.className == "comfy-carousel") {
+        this.close();
+    }
   }
   prevSlide(e) {
 	e.preventDefault();
@@ -419,8 +421,11 @@ class ComfyCarousel extends ComfyDialog {
 	let carousel;
 	if (this.is_load_image_node) {
 		carousel = $el("div.comfy-carousel-box", {  }, [
-		$el("div.slides", { $: (el) => el.addEventListener('pointermove', (e) => this.pointMoveEvent(e)), }, slides),
-		//$el("div.slides", {  }, slides),
+		$el("div.slides", { $: (el) => { 
+		    el.addEventListener('pointermove', (e) => this.pointMoveEvent(e));
+		    el.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
+	        el.addEventListener('pointerup', (e) => this.handlePointerUp(e));
+		}, }, slides),
 		$el("div.dots", {  }, dots),
 		$el("button.ig-ed-prev", { $: (el) => el.addEventListener('click', (e) => this.prevSlide(e)), }, [ $el('icon.ig-ed-prev-icon', {  }, )]),
 		$el("button.ig-ed-next", { $: (el) => el.addEventListener('click', (e) => this.nextSlide(e)), }, [ $el('icon.ig-ed-next-icon', {  }, )]),
@@ -431,7 +436,11 @@ class ComfyCarousel extends ComfyDialog {
 	}
 	else{
 		carousel = $el("div.comfy-carousel-box", {  }, [
-		$el("div.slides", { $: (el) => el.addEventListener('pointermove', (e) => this.pointMoveEvent(e)), }, slides),
+		$el("div.slides", { $: (el) => { 
+		    el.addEventListener('pointermove', (e) => this.pointMoveEvent(e));
+		    el.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
+	        el.addEventListener('pointerup', (e) => this.handlePointerUp(e));
+		}, }, slides),
 		$el("div.dots", {  }, dots),
 		$el("button.ig-ed-prev", { $: (el) => el.addEventListener('click', (e) => this.prevSlide(e)), }, [ $el('icon.ig-ed-prev-icon', {  }, )]),
 		$el("button.ig-ed-next", { $: (el) => el.addEventListener('click', (e) => this.nextSlide(e)), }, [ $el('icon.ig-ed-next-icon', {  }, )]),
