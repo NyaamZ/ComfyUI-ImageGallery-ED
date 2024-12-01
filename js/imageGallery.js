@@ -69,7 +69,6 @@ var styles = `
 @keyframes fadeOutRight {
     0% {
         opacity: 1;
-        transform: translateZ(0);
     }
     to {
         opacity: 0;
