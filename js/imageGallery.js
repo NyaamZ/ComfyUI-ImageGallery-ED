@@ -95,8 +95,6 @@ var styles = `
 	animation: fadeOutRight 0.4s;
 }
 
-
-
 .comfy-carousel-box .ig-ed-prev,
 .comfy-carousel-box .ig-ed-next,
 .comfy-carousel-box .ig-ed-close,
@@ -234,16 +232,22 @@ class ComfyCarousel extends ComfyDialog {
     super();
     this.element.classList.remove("comfy-modal");
     this.element.classList.add("comfy-carousel");
-    this.element.addEventListener('click', (e) => this.clickExit(e));
-	this.element.addEventListener('wheel', (e) => this.zoomInOut(e));
+    //this.element.addEventListener('click', (e) => this.clickExit(e));
+    this.element.addEventListener('wheel', (e) => this.zoomInOut(e));
+    this.element.addEventListener("animationend", (e) => {
+	    if (this.is_closed) {
+		    this.element.style.animation = `fadeInCarousel 0.4s`;
+		    super.close();
+	    }
+	});
     this.onKeydown = this.onKeydown.bind(this);
   }
   close() {
 	let active = this.getActive();
     active.classList.add('exit');
     document.removeEventListener("keydown", this.onKeydown);
-	this.carousel.style.animation = `fadeOutCarousel 0.4s`;
-	this.carousel.addEventListener("animationend", (e) =>super.close());
+	this.element.style.animation = `fadeOutCarousel 0.4s`;
+	this.is_closed = true;
   }
   createButtons() {
     return [];
@@ -415,6 +419,7 @@ class ComfyCarousel extends ComfyDialog {
   show(images, activeIndex, node) {
     let slides = [];
     let dots = [];
+    this.is_closed = false;
     this.image_gallery_node = node;
     this.is_load_image_node = (node.type.indexOf("Load Image") != -1);
     this.is_enter = true;
@@ -468,7 +473,6 @@ class ComfyCarousel extends ComfyDialog {
 		$el("button.ig-ed-copy", { $: (el) => el.addEventListener('click', (e) => this.copyToClip(e)), }, [ $el('icon.ig-ed-copy-icon', {  }, )]),
 		]);
 	}
-    this.carousel = carousel;
     super.show(carousel);
 
     document.addEventListener("keydown", this.onKeydown);
