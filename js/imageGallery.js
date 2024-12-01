@@ -28,6 +28,25 @@ var styles = `
 	-o-user-drag: none;
 	-ms-user-drag: none;
 	user-drag: none;
+	animation: fadeInCarousel 0.4s;
+}
+
+@keyframes fadeInCarousel {
+    0% {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOutCarousel {
+    0% {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }
 
 .comfy-carousel-box {
@@ -53,31 +72,27 @@ var styles = `
 
 @keyframes fadeInLeft {
     0% {
-        opacity: 0;
         transform: translate3d(-100%, 0, 0);
     }
     to {
-        opacity: 1;
         transform: translateZ(0);
     }
 }
 
 .comfy-carousel-box .slides img.enter {
-	animation: fadeInLeft 0.5s;
+	animation: fadeInLeft 0.4s;
 }
 
 @keyframes fadeOutRight {
     0% {
-        opacity: 1;
     }
     to {
-        opacity: 0;
         transform: translate3d(100%, 0, 0);
     }
 }
 
 .comfy-carousel-box .slides img.exit {
-	animation: fadeOutRight 0.5s;
+	animation: fadeOutRight 0.4s;
 }
 
 
@@ -222,6 +237,13 @@ class ComfyCarousel extends ComfyDialog {
     this.element.addEventListener('click', (e) => this.clickExit(e));
 	this.element.addEventListener('wheel', (e) => this.zoomInOut(e));
     this.onKeydown = this.onKeydown.bind(this);
+  }
+  close() {
+	let active = this.getActive();
+    active.classList.add('exit');
+    document.removeEventListener("keydown", this.onKeydown);
+	this.carousel.style.animation = `fadeOutCarousel 0.4s`;
+	this.carousel.addEventListener("animationend", (e) =>super.close());
   }
   createButtons() {
     return [];
@@ -429,7 +451,6 @@ class ComfyCarousel extends ComfyDialog {
 		$el("button.ig-ed-prev", { $: (el) => el.addEventListener('click', (e) => this.prevSlide(e)), }, [ $el('icon.ig-ed-prev-icon', {  }, )]),
 		$el("button.ig-ed-next", { $: (el) => el.addEventListener('click', (e) => this.nextSlide(e)), }, [ $el('icon.ig-ed-next-icon', {  }, )]),
 		$el("button.ig-ed-close", { $: (el) => el.addEventListener('click', (e) => this.close()), }, [ $el('icon.ig-ed-close-icon', {  }, )]),
-		//$el("a.copy", { $: (el) => el.addEventListener('click', (e) => this.copyToClip(e)), }),
 		$el("button.ig-ed-maskedit", { $: (el) => el.addEventListener('click', (e) => this.openMaskEditor(e)), }, [ $el('icon.ig-ed-maskedit-icon', {  }, )]),
 		]);
 	}
@@ -447,19 +468,11 @@ class ComfyCarousel extends ComfyDialog {
 		$el("button.ig-ed-copy", { $: (el) => el.addEventListener('click', (e) => this.copyToClip(e)), }, [ $el('icon.ig-ed-copy-icon', {  }, )]),
 		]);
 	}
-	
+    this.carousel = carousel;
     super.show(carousel);
 
     document.addEventListener("keydown", this.onKeydown);
     document.activeElement?.blur();
-  }
-  close() {
-	let active = this.getActive();
-    active.classList.add('exit');
-    document.removeEventListener("keydown", this.onKeydown);
-    setTimeout(() => {
-      super.close();
-    }, 350);	
   }
 }
 
