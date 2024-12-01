@@ -243,9 +243,9 @@ class ComfyCarousel extends ComfyDialog {
     this.onKeydown = this.onKeydown.bind(this);
   }
   close() {
+    document.removeEventListener("keydown", this.onKeydown);
 	let active = this.getActive();
     active.classList.add('exit');
-    document.removeEventListener("keydown", this.onKeydown);
 	this.element.style.animation = `fadeOutCarousel 0.4s`;
 	this.is_closed = true;
   }
@@ -264,7 +264,7 @@ class ComfyCarousel extends ComfyDialog {
 	  setTimeout(() => {        
 		slide.classList.remove('enter');
 		this.is_enter = false;
-      }, 500);	
+      }, 410);	
 	}
 	
     if (active) {	  
@@ -419,10 +419,10 @@ class ComfyCarousel extends ComfyDialog {
   show(images, activeIndex, node) {
     let slides = [];
     let dots = [];
+    this.is_enter = true;
     this.is_closed = false;
     this.image_gallery_node = node;
     this.is_load_image_node = (node.type.indexOf("Load Image") != -1);
-    this.is_enter = true;
     this.zoom_ratio = 1.0;
     this.pan_x = 0;
     this.pan_y = 0;
