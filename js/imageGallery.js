@@ -114,8 +114,8 @@ var styles = `
     top: 5%;
     left: 0;
 
-    overflow: visible; /* overflow를 visible로 변경 */
-	text-align: left; /* 텍스트 정렬을 명시적으로 왼쪽으로 설정 */
+    overflow: visible;
+	text-align: left;
 }
 
 .comfy-carousel-box .ig-ed-prev,
