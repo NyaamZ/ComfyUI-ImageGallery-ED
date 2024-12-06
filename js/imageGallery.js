@@ -95,6 +95,29 @@ var styles = `
 	animation: fadeOutRight 0.4s;
 }
 
+.comfy-carousel-box .ig-ed-status {
+    font-size: 12px;
+	line-height: 170%;
+    position: absolute;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    padding: 10px 10px;
+    border: none;
+    user-select: none;
+    outline-color: transparent;
+    transition: background 0.2s;
+    border-radius: 5px;
+    top: 5%;
+    left: 0;
+
+    overflow: visible; /* overflow를 visible로 변경 */
+	text-align: left; /* 텍스트 정렬을 명시적으로 왼쪽으로 설정 */
+}
+
 .comfy-carousel-box .ig-ed-prev,
 .comfy-carousel-box .ig-ed-next,
 .comfy-carousel-box .ig-ed-close,
@@ -105,7 +128,6 @@ var styles = `
 	justify-content: center;
 	align-items: center;
 	overflow: hidden;
-    cursor: pointer;
 	margin: 0.5rem;
     background: rgba(255, 255, 255, 0.1);
     color:  var(--p-surface-50);
@@ -252,8 +274,29 @@ class ComfyCarousel extends ComfyDialog {
   createButtons() {
     return [];
   }
+  
   getActive() {
     return this.element.querySelector('.slides > .shown');
+  }
+  buttonloaded(){
+	const els = document.getElementsByClassName("ig-ed-status");
+	if (els.length > 0) {
+		this.btn_img_status = els[0];
+		this.btn_img_status.innerHTML = this.btn_img_text;
+	}
+  }
+  show_image_status (slide){
+	const src = slide.getAttribute('src');
+    if (!src) {
+        console.error("No src attribute found.");
+		return;
+    }
+	const urlParams = new URLSearchParams(src.split('?')[1]);
+    const filename = urlParams.get('filename');
+	const image = new Image();
+    image.src = src;
+	this.btn_img_text = "name : "  + filename + "<br>width : " + image.width + "px<br>height : " + image.height + "px";
+	if (this.btn_img_status) this.btn_img_status.innerHTML = this.btn_img_text;
   }
   selectImage(slide) {
     let active = this.getActive();
@@ -264,6 +307,8 @@ class ComfyCarousel extends ComfyDialog {
 	  setTimeout(() => {        
 		slide.classList.remove('enter');
 		this.is_enter = false;
+		this.show_image_status (slide);
+		this.buttonloaded();
       }, 410);	
 	}
 	
@@ -272,9 +317,11 @@ class ComfyCarousel extends ComfyDialog {
       active._dot.classList.remove('active');
     }
 
+	this.show_image_status (slide);
     slide.classList.add('shown');
     slide._dot.classList.toggle('active');
   }
+
   clickExit(e) {
 	if(e.target.className == "comfy-carousel") {
         this.close();
@@ -359,8 +406,7 @@ class ComfyCarousel extends ComfyDialog {
 	ComfyApp.clipspace_return_node = null;
 	this.image_gallery_node.setDirtyCanvas(true);
 	let load_image_ed = app.graph._nodes.find((n) => n.type === "Load Image 💬ED");
-	if (load_image_ed) ComfyApp.pasteFromClipspace(load_image_ed);
-	
+	if (load_image_ed) ComfyApp.pasteFromClipspace(load_image_ed);	
 	this.close();
     e.stopPropagation();
   }
@@ -421,6 +467,8 @@ class ComfyCarousel extends ComfyDialog {
     let dots = [];
     this.is_enter = true;
     this.is_closed = false;
+	this.btn_img_status = null;
+	this.btn_img_text = "";
     this.image_gallery_node = node;
     this.is_load_image_node = (node.type.indexOf("Load Image") != -1);
     this.zoom_ratio = 1.0;
@@ -453,6 +501,7 @@ class ComfyCarousel extends ComfyDialog {
 	        el.addEventListener('pointerup', (e) => this.handlePointerUp(e));
 		}, }, slides),
 		$el("div.dots", {  }, dots),
+		$el("button.ig-ed-status", {  },),
 		$el("button.ig-ed-prev", { $: (el) => el.addEventListener('click', (e) => this.prevSlide(e)), }, [ $el('icon.ig-ed-prev-icon', {  }, )]),
 		$el("button.ig-ed-next", { $: (el) => el.addEventListener('click', (e) => this.nextSlide(e)), }, [ $el('icon.ig-ed-next-icon', {  }, )]),
 		$el("button.ig-ed-close", { $: (el) => el.addEventListener('click', (e) => this.close()), }, [ $el('icon.ig-ed-close-icon', {  }, )]),
@@ -467,6 +516,7 @@ class ComfyCarousel extends ComfyDialog {
 	        el.addEventListener('pointerup', (e) => this.handlePointerUp(e));
 		}, }, slides),
 		$el("div.dots", {  }, dots),
+		$el("button.ig-ed-status", {  },),
 		$el("button.ig-ed-prev", { $: (el) => el.addEventListener('click', (e) => this.prevSlide(e)), }, [ $el('icon.ig-ed-prev-icon', {  }, )]),
 		$el("button.ig-ed-next", { $: (el) => el.addEventListener('click', (e) => this.nextSlide(e)), }, [ $el('icon.ig-ed-next-icon', {  }, )]),
 		$el("button.ig-ed-close", { $: (el) => el.addEventListener('click', (e) => this.close()), }, [ $el('icon.ig-ed-close-icon', {  }, )]),
