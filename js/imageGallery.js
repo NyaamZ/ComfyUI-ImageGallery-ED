@@ -250,325 +250,330 @@ styleSheet.innerText = styles
 document.head.appendChild(styleSheet)
 
 class ComfyCarousel extends ComfyDialog {
-  constructor() {
-    super();
-    this.element.classList.remove("comfy-modal");
-    this.element.classList.add("comfy-carousel");
-    //this.element.addEventListener('click', (e) => this.clickExit(e));
-    this.element.addEventListener('wheel', (e) => this.zoomInOut(e));
-    this.element.addEventListener("animationend", (e) => {
-	    if (this.is_closed) {
-		    this.element.style.animation = `fadeInCarousel 0.4s`;
-		    super.close();
-	    }
-	});
-    this.onKeydown = this.onKeydown.bind(this);
-  }
-  close() {
-    document.removeEventListener("keydown", this.onKeydown);
-	let active = this.getActive();
-    active.classList.add('exit');
-	this.element.style.animation = `fadeOutCarousel 0.4s`;
-	this.is_closed = true;
-  }
-  createButtons() {
-    return [];
-  }
-  
-  getActive() {
-    return this.element.querySelector('.slides > .shown');
-  }
-  buttonloaded(){
-	const els = document.getElementsByClassName("ig-ed-status");
-	if (els.length > 0) {
-		this.btn_img_status = els[0];
-		this.btn_img_status.innerHTML = this.btn_img_text;
+	constructor() {
+		super();
+		this.element.classList.remove("comfy-modal");
+		this.element.classList.add("comfy-carousel");
+		//this.element.addEventListener('click', (e) => this.clickExit(e));
+		this.element.addEventListener('wheel', (e) => this.zoomInOut(e));
+		this.element.addEventListener("animationend", (e) => {
+			if (this.is_closed) {
+				this.element.style.animation = `fadeInCarousel 0.4s`;
+				super.close();
+			}
+		});
+		this.onKeydown = this.onKeydown.bind(this);
 	}
-  }
-  show_image_status (slide){
-	const src = slide.getAttribute('src');
-    if (!src) {
-        console.error("No src attribute found.");
-		return;
-    }
-	const urlParams = new URLSearchParams(src.split('?')[1]);
-    const filename = urlParams.get('filename');
-	const image = new Image();
-    image.src = src;
-	this.btn_img_text = "name : "  + filename + "<br>width : " + image.width + "px<br>height : " + image.height + "px";
-	if (this.btn_img_status) this.btn_img_status.innerHTML = this.btn_img_text;
-  }
-  selectImage(slide) {
-    let active = this.getActive();
-	this.initializePanZoom(slide);
-	
-	if (this.is_enter) {
-	  slide.classList.add('enter');
-	  setTimeout(() => {        
-		slide.classList.remove('enter');
-		this.is_enter = false;
-		this.show_image_status (slide);
-		this.buttonloaded();
-      }, 410);	
+	close() {
+		document.removeEventListener("keydown", this.onKeydown);
+		let active = this.getActive();
+		active.classList.add('exit');
+		this.element.style.animation = `fadeOutCarousel 0.4s`;
+		this.is_closed = true;
 	}
-	
-    if (active) {	  
-      active.classList.remove('shown');
-      active._dot.classList.remove('active');
-    }
+	createButtons() {
+		return [];
+	}
 
-	this.show_image_status (slide);
-    slide.classList.add('shown');
-    slide._dot.classList.toggle('active');
-  }
-
-  clickExit(e) {
-	if(e.target.className == "comfy-carousel") {
-        this.close();
-    }
-  }
-  prevSlide(e) {
-	e.preventDefault();
-    let active = this.getActive();
-    this.selectImage(active.previousElementSibling || active.parentNode.lastElementChild);
-    e.stopPropagation();
-  }
-  nextSlide(e) {
-	e.preventDefault();
-    let active = this.getActive();	
-    this.selectImage(active.nextElementSibling || active.parentNode.firstElementChild);
-    e.stopPropagation();
-  }
-  
-  zoomInOut(e) {
-	e.preventDefault();
-	if(event.deltaY < 0) {
-		this.zoom_ratio = Math.min(10.0, this.zoom_ratio+0.2);
-		//console.log("this.zoom_ratio:" + this.zoom_ratio);
+	getActive() {
+		return this.element.querySelector('.slides > .shown');
 	}
-	else {
-		this.zoom_ratio = Math.max(0.2, this.zoom_ratio-0.2);
-		//console.log("this.zoom_ratio:" + this.zoom_ratio);
-	}
-  this.invalidatePanZoom();
-  } 
-  
-  pointMoveEvent(event) {
-	event.preventDefault();
-	if(event.buttons == 1 || event.buttons == 4) {
-		if(this.mousedown_x) {
-			let deltaX = (this.mousedown_x - event.clientX) / this.zoom_ratio;
-			let deltaY = (this.mousedown_y - event.clientY) / this.zoom_ratio;
-			this.pan_x = this.mousedown_pan_x - deltaX;
-			this.pan_y = this.mousedown_pan_y - deltaY;			
-			// console.log("this.pan_x:" + this.pan_x);
-			// console.log("this.pan_y:" + this.pan_y);			
-			this.invalidatePanZoom();
+	buttonloaded() {
+		const els = document.getElementsByClassName("ig-ed-status");
+		if (els.length > 0) {
+			this.btn_img_status = els[0];
+			this.btn_img_status.innerHTML = this.btn_img_text;
 		}
 	}
-  }  
-  handlePointerDown(event) {
-	if (event.buttons == 1 || event.buttons == 4) {
-		this.mousedown_x = event.clientX;
-		this.mousedown_y = event.clientY;
-
-		this.mousedown_pan_x = this.pan_x;
-		this.mousedown_pan_y = this.pan_y;
-	}	
-  }
-  handlePointerUp(event) {
-	event.preventDefault();
-
-	this.mousedown_x = null;
-	this.mousedown_y = null;	
-  }
-  
-  initializePanZoom(active){
-	this.mousedown_x = null;
-	this.mousedown_y = null;
-
-	active.style.transform = `scale(${this.zoom_ratio}) translate(${this.pan_x}px, ${this.pan_y}px)`;
-  }
-  
-  invalidatePanZoom() {
-	let active = this.getActive();
-
-	active.style.transform = `scale(${this.zoom_ratio}) translate(${this.pan_x}px, ${this.pan_y}px)`;
-  }
-  
-  copyToClip(e) {
-    let active = this.getActive();
-	const slidess = [...active.parentNode.children];
-    const imageIndex = slidess.indexOf(active);	
-	//console.log("ED_log image_index:" + imageIndex);
-	this.image_gallery_node.imageIndex = imageIndex;
-    ComfyApp.copyToClipspace(this.image_gallery_node);
-	ComfyApp.clipspace_return_node = null;
-	this.image_gallery_node.setDirtyCanvas(true);
-	let load_image_ed = app.graph._nodes.find((n) => n.type === "Load Image 💬ED");
-	if (load_image_ed) ComfyApp.pasteFromClipspace(load_image_ed);	
-	this.close();
-    e.stopPropagation();
-  }
-
-  openMaskEditor(e) {
-    let active = this.getActive();
-	const slidess = [...active.parentNode.children];
-    const imageIndex = slidess.indexOf(active);	
-	//console.log("ED_log image_index:" + imageIndex);
-	this.image_gallery_node.imageIndex = imageIndex;
-    ComfyApp.copyToClipspace(this.image_gallery_node);
-	ComfyApp.clipspace_return_node = this.image_gallery_node;
-	this.image_gallery_node.setDirtyCanvas(true);
-	this.close();
-	ComfyApp.open_maskeditor();
-    e.stopPropagation();
-  }
-  
-  onKeydown(e) {
-    if (e.key == "Escape")
-      this.close();
-    else if (e.key == "ArrowLeft" || e.key == "q" || e.key == "Q")
-      this.prevSlide(e);
-    else if (e.key == "ArrowRight" || e.key == "e" || e.key == "E")
-      this.nextSlide(e);
-	else if (e.key == "ArrowUp"){
-      this.zoom_ratio = Math.min(10.0, this.zoom_ratio+0.2);
-	  this.invalidatePanZoom();
+	show_image_status(slide) {
+		const src = slide.getAttribute('src');
+		if (!src) {
+			console.error("No src attribute found.");
+			return;
+		}
+		const urlParams = new URLSearchParams(src.split('?')[1]);
+		const filename = urlParams.get('filename');
+		const image = new Image();
+		image.src = src;
+		this.btn_img_text = "name : " + filename + "<br>width : " + image.width + "px<br>height : " + image.height + "px";
+		if (this.btn_img_status) this.btn_img_status.innerHTML = this.btn_img_text;
 	}
-    else if (e.key == "ArrowDown"){
-      this.zoom_ratio = Math.max(0.2, this.zoom_ratio-0.2);
-      this.invalidatePanZoom();
-	}
-	else if (e.key == "a"|| e.key == "A"){
-		this.pan_x = this.pan_x - 20;
-	  this.invalidatePanZoom();
-	}
-    else if (e.key == "d"|| e.key == "D"){
-		this.pan_x = this.pan_x + 20;
-	  this.invalidatePanZoom();
-	}
-	else if (e.key == "w"|| e.key == "W"){
-		this.pan_y = this.pan_y - 20;
-	  this.invalidatePanZoom();
-	}
-    else if (e.key == "s"|| e.key == "S"){
-      this.pan_y = this.pan_y + 20;
-      this.invalidatePanZoom();
-	}
-    else if (!this.is_load_image_node && (e.key == " " || e.key == "Spacebar" || e.key == 32 || e.key == "C" || e.key == "c"))
-      this.copyToClip(e);
-    else if (this.is_load_image_node && (e.key == "M" || e.key == "m"))
-      this.openMaskEditor(e);
-  }
-  
-  show(images, activeIndex, node) {
-    let slides = [];
-    let dots = [];
-    this.is_enter = true;
-    this.is_closed = false;
-	this.btn_img_status = null;
-	this.btn_img_text = "";
-    this.image_gallery_node = node;
-    this.is_load_image_node = (node.type.indexOf("Load Image") != -1);
-    this.zoom_ratio = 1.0;
-    this.pan_x = 0;
-    this.pan_y = 0;
-	
-    for (let image of images) {
-      let slide = image.cloneNode(true);
-	  slide.draggable = false;
-      slides.push(slide);
+	selectImage(slide) {
+		let active = this.getActive();
+		this.initializePanZoom(slide);
 
-      let dot = image.cloneNode(true);
-      dot.addEventListener('click', (e) => {
-        this.selectImage(slide);
-        e.stopPropagation();
-      }, true);
-      slide._dot = dot;
-      dots.push(dot);
+		if (this.is_enter) {
+			slide.classList.add('enter');
+			setTimeout(() => {
+				slide.classList.remove('enter');
+				this.is_enter = false;
+				this.show_image_status(slide);
+				this.buttonloaded();
+			}, 410);
+		}
 
-      if (slides.length - 1 == activeIndex)
-        this.selectImage(slide);
-    }
-	
-	let carousel;
-	if (this.is_load_image_node) {
-		carousel = $el("div.comfy-carousel-box", {  }, [
-		$el("div.slides", { $: (el) => { 
-		    el.addEventListener('pointermove', (e) => this.pointMoveEvent(e));
-		    el.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
-	        el.addEventListener('pointerup', (e) => this.handlePointerUp(e));
-		}, }, slides),
-		$el("div.dots", {  }, dots),
-		$el("button.ig-ed-status", {  },),
-		$el("button.ig-ed-prev", { $: (el) => el.addEventListener('click', (e) => this.prevSlide(e)), }, [ $el('icon.ig-ed-prev-icon', {  }, )]),
-		$el("button.ig-ed-next", { $: (el) => el.addEventListener('click', (e) => this.nextSlide(e)), }, [ $el('icon.ig-ed-next-icon', {  }, )]),
-		$el("button.ig-ed-close", { $: (el) => el.addEventListener('click', (e) => this.close()), }, [ $el('icon.ig-ed-close-icon', {  }, )]),
-		$el("button.ig-ed-maskedit", { $: (el) => el.addEventListener('click', (e) => this.openMaskEditor(e)), }, [ $el('icon.ig-ed-maskedit-icon', {  }, )]),
-		]);
-	}
-	else{
-		carousel = $el("div.comfy-carousel-box", {  }, [
-		$el("div.slides", { $: (el) => { 
-		    el.addEventListener('pointermove', (e) => this.pointMoveEvent(e));
-		    el.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
-	        el.addEventListener('pointerup', (e) => this.handlePointerUp(e));
-		}, }, slides),
-		$el("div.dots", {  }, dots),
-		$el("button.ig-ed-status", {  },),
-		$el("button.ig-ed-prev", { $: (el) => el.addEventListener('click', (e) => this.prevSlide(e)), }, [ $el('icon.ig-ed-prev-icon', {  }, )]),
-		$el("button.ig-ed-next", { $: (el) => el.addEventListener('click', (e) => this.nextSlide(e)), }, [ $el('icon.ig-ed-next-icon', {  }, )]),
-		$el("button.ig-ed-close", { $: (el) => el.addEventListener('click', (e) => this.close()), }, [ $el('icon.ig-ed-close-icon', {  }, )]),
-		$el("button.ig-ed-copy", { $: (el) => el.addEventListener('click', (e) => this.copyToClip(e)), }, [ $el('icon.ig-ed-copy-icon', {  }, )]),
-		]);
-	}
-    super.show(carousel);
+		if (active) {
+			active.classList.remove('shown');
+			active._dot.classList.remove('active');
+		}
 
-    document.addEventListener("keydown", this.onKeydown);
-    document.activeElement?.blur();
-  }
+		this.show_image_status(slide);
+		slide.classList.add('shown');
+		slide._dot.classList.toggle('active');
+	}
+
+	clickExit(e) {
+		if (e.target.className == "comfy-carousel") {
+			this.close();
+		}
+	}
+	prevSlide(e) {
+		e.preventDefault();
+		let active = this.getActive();
+		this.selectImage(active.previousElementSibling || active.parentNode.lastElementChild);
+		e.stopPropagation();
+	}
+	nextSlide(e) {
+		e.preventDefault();
+		let active = this.getActive();
+		this.selectImage(active.nextElementSibling || active.parentNode.firstElementChild);
+		e.stopPropagation();
+	}
+
+	zoomInOut(e) {
+		e.preventDefault();
+		if (event.deltaY < 0) {
+			this.zoom_ratio = Math.min(10.0, this.zoom_ratio + 0.2);
+		} else {
+			this.zoom_ratio = Math.max(0.2, this.zoom_ratio - 0.2);
+		}
+		this.invalidatePanZoom();
+	}
+
+	pointMoveEvent(event) {
+		event.preventDefault();
+		if (event.buttons == 1 || event.buttons == 4) {
+			if (this.mousedown_x) {
+				let deltaX = (this.mousedown_x - event.clientX) / this.zoom_ratio;
+				let deltaY = (this.mousedown_y - event.clientY) / this.zoom_ratio;
+				this.pan_x = this.mousedown_pan_x - deltaX;
+				this.pan_y = this.mousedown_pan_y - deltaY;		
+				this.invalidatePanZoom();
+			}
+		}
+	}
+	handlePointerDown(event) {
+		if (event.buttons == 1 || event.buttons == 4) {
+			this.mousedown_x = event.clientX;
+			this.mousedown_y = event.clientY;
+			this.mousedown_pan_x = this.pan_x;
+			this.mousedown_pan_y = this.pan_y;
+		}
+	}
+	handlePointerUp(event) {
+		event.preventDefault();
+		this.mousedown_x = null;
+		this.mousedown_y = null;
+	}
+
+	initializePanZoom(active) {
+		this.mousedown_x = null;
+		this.mousedown_y = null;
+		active.style.transform = `scale(${this.zoom_ratio}) translate(${this.pan_x}px, ${this.pan_y}px)`;
+	}
+
+	invalidatePanZoom() {
+		let active = this.getActive();
+		active.style.transform = `scale(${this.zoom_ratio}) translate(${this.pan_x}px, ${this.pan_y}px)`;
+	}
+
+	copyToClip(e) {
+		let active = this.getActive();
+		const slidess = [...active.parentNode.children];
+		const imageIndex = slidess.indexOf(active);
+		this.image_gallery_node.imageIndex = imageIndex;
+		ComfyApp.copyToClipspace(this.image_gallery_node);
+		ComfyApp.clipspace_return_node = null;
+		this.image_gallery_node.setDirtyCanvas(true);
+		let load_image_ed = app.graph._nodes.find((n) => n.type === "Load Image 💬ED");
+		if (load_image_ed) {
+			ComfyApp.pasteFromClipspace(load_image_ed);
+			console.log("Copy image to Load Image ED");
+		}
+		this.close();
+		e.stopPropagation();
+	}
+
+	openMaskEditor(e) {
+		let active = this.getActive();
+		const slidess = [...active.parentNode.children];
+		const imageIndex = slidess.indexOf(active);
+		this.image_gallery_node.imageIndex = imageIndex;
+		ComfyApp.copyToClipspace(this.image_gallery_node);
+		ComfyApp.clipspace_return_node = this.image_gallery_node;
+		this.image_gallery_node.setDirtyCanvas(true);
+		this.close();
+		ComfyApp.open_maskeditor();
+		e.stopPropagation();
+	}
+
+	onKeydown(e) {
+		if (e.key == "Escape")
+			this.close();
+		else if (e.key == "ArrowLeft" || e.key == "q" || e.key == "Q")
+			this.prevSlide(e);
+		else if (e.key == "ArrowRight" || e.key == "e" || e.key == "E")
+			this.nextSlide(e);
+		else if (e.key == "ArrowUp") {
+			this.zoom_ratio = Math.min(10.0, this.zoom_ratio + 0.2);
+			this.invalidatePanZoom();
+		} else if (e.key == "ArrowDown") {
+			this.zoom_ratio = Math.max(0.2, this.zoom_ratio - 0.2);
+			this.invalidatePanZoom();
+		} else if (e.key == "a" || e.key == "A") {
+			this.pan_x = this.pan_x - 20;
+			this.invalidatePanZoom();
+		} else if (e.key == "d" || e.key == "D") {
+			this.pan_x = this.pan_x + 20;
+			this.invalidatePanZoom();
+		} else if (e.key == "w" || e.key == "W") {
+			this.pan_y = this.pan_y - 20;
+			this.invalidatePanZoom();
+		} else if (e.key == "s" || e.key == "S") {
+			this.pan_y = this.pan_y + 20;
+			this.invalidatePanZoom();
+		} else if (!this.is_load_image_node && (e.key == " " || e.key == "Spacebar" || e.key == 32 || e.key == "C" || e.key == "c"))
+			this.copyToClip(e);
+		else if (this.is_load_image_node && (e.key == "M" || e.key == "m"))
+			this.openMaskEditor(e);
+	}
+
+	show(images, activeIndex, node) {
+		let slides = [];
+		let dots = [];
+		this.is_enter = true;
+		this.is_closed = false;
+		this.btn_img_status = null;
+		this.btn_img_text = "";
+		this.image_gallery_node = node;
+		this.is_load_image_node = (node.type.indexOf("Load Image") != -1);
+		this.zoom_ratio = 1.0;
+		this.pan_x = 0;
+		this.pan_y = 0;
+
+		for (let image of images) {
+			let slide = image.cloneNode(true);
+			slide.draggable = false;
+			slides.push(slide);
+
+			let dot = image.cloneNode(true);
+			dot.addEventListener('click', (e) => {
+				this.selectImage(slide);
+				e.stopPropagation();
+			}, true);
+			slide._dot = dot;
+			dots.push(dot);
+
+			if (slides.length - 1 == activeIndex)
+				this.selectImage(slide);
+		}
+
+		let carousel;
+		if (this.is_load_image_node) {
+			carousel = $el("div.comfy-carousel-box", {}, [
+				$el("div.slides", {
+					$: (el) => {
+						el.addEventListener('pointermove', (e) => this.pointMoveEvent(e));
+						el.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
+						el.addEventListener('pointerup', (e) => this.handlePointerUp(e));
+					},
+				}, slides),
+				$el("div.dots", {}, dots),
+				$el("button.ig-ed-status", {}, ),
+				$el("button.ig-ed-prev", {
+					$: (el) => el.addEventListener('click', (e) => this.prevSlide(e)),
+				}, [$el('icon.ig-ed-prev-icon', {}, )]),
+				$el("button.ig-ed-next", {
+					$: (el) => el.addEventListener('click', (e) => this.nextSlide(e)),
+				}, [$el('icon.ig-ed-next-icon', {}, )]),
+				$el("button.ig-ed-close", {
+					$: (el) => el.addEventListener('click', (e) => this.close()),
+				}, [$el('icon.ig-ed-close-icon', {}, )]),
+				$el("button.ig-ed-maskedit", {
+					$: (el) => el.addEventListener('click', (e) => this.openMaskEditor(e)),
+				}, [$el('icon.ig-ed-maskedit-icon', {}, )]),
+			]);
+		} else {
+			carousel = $el("div.comfy-carousel-box", {}, [
+				$el("div.slides", {
+					$: (el) => {
+						el.addEventListener('pointermove', (e) => this.pointMoveEvent(e));
+						el.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
+						el.addEventListener('pointerup', (e) => this.handlePointerUp(e));
+					},
+				}, slides),
+				$el("div.dots", {}, dots),
+				$el("button.ig-ed-status", {}, ),
+				$el("button.ig-ed-prev", {
+					$: (el) => el.addEventListener('click', (e) => this.prevSlide(e)),
+				}, [$el('icon.ig-ed-prev-icon', {}, )]),
+				$el("button.ig-ed-next", {
+					$: (el) => el.addEventListener('click', (e) => this.nextSlide(e)),
+				}, [$el('icon.ig-ed-next-icon', {}, )]),
+				$el("button.ig-ed-close", {
+					$: (el) => el.addEventListener('click', (e) => this.close()),
+				}, [$el('icon.ig-ed-close-icon', {}, )]),
+				$el("button.ig-ed-copy", {
+					$: (el) => el.addEventListener('click', (e) => this.copyToClip(e)),
+				}, [$el('icon.ig-ed-copy-icon', {}, )]),
+			]);
+		}
+		super.show(carousel);
+
+		document.addEventListener("keydown", this.onKeydown);
+		document.activeElement?.blur();
+	}
 }
 
 app.registerExtension({
-  name: "Comfy.ImageGallery",
-  init() {
-    app.ui.carousel = new ComfyCarousel();
-  },
-  beforeRegisterNodeDef(nodeType, nodeData) {
-    function isImageClick(node, pos) {
-      // This follows the logic of getImageTop() in ComfyUI
-      let imageY;
-      if (node.imageOffset)
-        imageY = node.imageOffset;
-      else if (node.widgets?.length) {
-        const widget = node.widgets[node.widgets.length - 1];
-        imageY = widget.last_y;
-        if (widget.computeSize)
-          imageY += widget.computeSize()[1] + 4;
-        else if (widget.computedHeight)
-          imageY += widget.computedHeight;
-        else
-          imageY += LiteGraph.NODE_WIDGET_HEIGHT + 4;
-      } else
-        imageY = node.computeSize()[1];
+	name: "Comfy.ImageGallery",
+	init() {
+		app.ui.carousel = new ComfyCarousel();
+	},
+	beforeRegisterNodeDef(nodeType, nodeData) {
+		function isImageClick(node, pos) {
+			// This follows the logic of getImageTop() in ComfyUI
+			let imageY;
+			if (node.imageOffset)
+				imageY = node.imageOffset;
+			else if (node.widgets?.length) {
+				const widget = node.widgets[node.widgets.length - 1];
+				imageY = widget.last_y;
+				if (widget.computeSize)
+					imageY += widget.computeSize()[1] + 4;
+				else if (widget.computedHeight)
+					imageY += widget.computedHeight;
+				else
+					imageY += LiteGraph.NODE_WIDGET_HEIGHT + 4;
+			} else
+				imageY = node.computeSize()[1];
 
-      return pos[1] >= imageY;
-    }
+			return pos[1] >= imageY;
+		}
 
-    const origOnDblClick = nodeType.prototype.onDblClick;
-    nodeType.prototype.onDblClick = function (e, pos, ...args) {
-      if (this.imgs && this.imgs.length && isImageClick(this, pos)) {
-        let imageIndex = 0;
-        if (this.imageIndex !== null)
-          imageIndex = this.imageIndex;
-        else if (this.overIndex !== null)
-          imageIndex = this.overIndex;
-		app.ui.carousel.show(this.imgs, imageIndex, this);
-      }
+		const origOnDblClick = nodeType.prototype.onDblClick;
+		nodeType.prototype.onDblClick = function(e, pos, ...args) {
+			if (this.imgs && this.imgs.length && isImageClick(this, pos)) {
+				let imageIndex = 0;
+				if (this.imageIndex !== null)
+					imageIndex = this.imageIndex;
+				else if (this.overIndex !== null)
+					imageIndex = this.overIndex;
+				app.ui.carousel.show(this.imgs, imageIndex, this);
+			}
 
-      if (origOnDblClick)
-        origOnDblClick.call(this, e, pos, ...args);
-    }
-  },
+			if (origOnDblClick)
+				origOnDblClick.call(this, e, pos, ...args);
+		}
+	},
 });
