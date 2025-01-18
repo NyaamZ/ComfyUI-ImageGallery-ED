@@ -1,6 +1,7 @@
 import { app } from "/scripts/app.js";
 import { $el, ComfyDialog } from "/scripts/ui.js";
 import { ComfyApp } from "../../scripts/app.js";
+import { bo as useToastStore } from "../../assets/index-DIU5yZe9.js";
 
 var styles = `
 .comfy-carousel {
@@ -122,7 +123,8 @@ var styles = `
 .comfy-carousel-box .ig-ed-next,
 .comfy-carousel-box .ig-ed-close,
 .comfy-carousel-box .ig-ed-copy,
-.comfy-carousel-box .ig-ed-maskedit {
+.comfy-carousel-box .ig-ed-maskedit,
+.comfy-carousel-box .ig-ed-multi_paste {
 	position: absolute;
 	display: flex;
 	justify-content: center;
@@ -171,11 +173,20 @@ var styles = `
 	border-radius: 10%;	
 }
 
+.comfy-carousel-box .ig-ed-multi_paste {
+	width: 3.2rem;
+	height: 3.2rem;
+	bottom: 6%;
+    right: 2%;
+	border-radius: 10%;	
+}
+
 .comfy-carousel-box .ig-ed-prev:hover,
 .comfy-carousel-box .ig-ed-next:hover,
 .comfy-carousel-box .ig-ed-close:hover,
 .comfy-carousel-box .ig-ed-copy-icon:hover,
-.comfy-carousel-box .ig-ed-maskedit-icon:hover {
+.comfy-carousel-box .ig-ed-maskedit-icon:hover,
+.comfy-carousel-box .ig-ed-multi_paste-icon:hover {
     background:  rgba(255, 255, 255, 0.2);
     color: var(--p-surface-0);
 }
@@ -184,7 +195,8 @@ var styles = `
 .comfy-carousel-box .ig-ed-next:focus-visible,
 .comfy-carousel-box .ig-ed-close:focus-visible,
 .comfy-carousel-box .ig-ed-copy-icon:focus-visible,
-.comfy-carousel-box .ig-ed-maskedit-icon:focus-visible {
+.comfy-carousel-box .ig-ed-maskedit-icon:focus-visible,
+.comfy-carousel-box .ig-ed-multi_paste-icon:focus-visible {
     box-shadow:  var(--p-focus-ring-shadow);
 	outline:  var(--p-focus-ring-width) var(--p-focus-ring-style) var(--p-focus-ring-color);
     outline-offset:  var(--p-focus-ring-offset);
@@ -199,7 +211,8 @@ var styles = `
 }
 
 .comfy-carousel-box .ig-ed-copy-icon,
-.comfy-carousel-box .ig-ed-maskedit-icon {
+.comfy-carousel-box .ig-ed-maskedit-icon,
+.comfy-carousel-box .ig-ed-multi_paste-icon {
     font-size: 1.5rem;
 	width: 3.2rem;
 	height: 3.2rem;
@@ -227,6 +240,11 @@ var styles = `
 	padding: 0.5rem;
 }
 
+.comfy-carousel-box .ig-ed-multi_paste-icon {
+    content: url("data:image/svg+xml,%3Csvg id='Layer_1' data-name='Layer 1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 122.88 98.27' fill='white'%3E%3Ctitle%3Ephotos%3C/title%3E%3Cpath d='M4.84,27.31H90.76a4.77,4.77,0,0,1,3.4,1.41,4.84,4.84,0,0,1,1.41,3.4V93.47a4.75,4.75,0,0,1-1.41,3.39,1.36,1.36,0,0,1-.25.22,4.67,4.67,0,0,1-3.18,1.19H4.81A4.81,4.81,0,0,1,0,93.47V32.12a4.77,4.77,0,0,1,1.41-3.4,4.83,4.83,0,0,1,3.4-1.41ZM32.15,0h85.92a4.77,4.77,0,0,1,3.4,1.41,4.84,4.84,0,0,1,1.41,3.4V66.16a4.75,4.75,0,0,1-1.41,3.39,1.09,1.09,0,0,1-.25.22A4.67,4.67,0,0,1,118,71h-5.38V65.22h4.51V5.71H33.06v4.2H27.31V4.81a4.77,4.77,0,0,1,1.41-3.4A4.84,4.84,0,0,1,32.12,0ZM18.5,13.66h85.92a4.75,4.75,0,0,1,3.39,1.41,4.8,4.8,0,0,1,1.41,3.39V79.81a4.77,4.77,0,0,1-1.41,3.4,1.4,1.4,0,0,1-.25.22,4.67,4.67,0,0,1-3.18,1.19H99V78.88h4.51V19.37H19.4v4.2H13.65V18.46a4.81,4.81,0,0,1,4.81-4.8ZM24.68,44a6.9,6.9,0,1,1-6.89,6.89A6.89,6.89,0,0,1,24.68,44Zm29,29.59L67.49,49.71,82.14,86.77H13.77V82.18l5.74-.29,5.75-14.08,2.87,10.06h8.62l7.47-19.25L53.7,73.56ZM89.86,33H5.75V92.53H89.86V33Z'/%3E%3C/svg%3E");
+	padding: 0.5rem;
+}
+
 .comfy-carousel-box .dots img {
     height: 32px;
     margin: 8px 0 0 8px;
@@ -243,6 +261,82 @@ var styles = `
 	border: 1px solid white;
 }
 `
+
+function show_message(short_msg, detail_msg) {
+	useToastStore().add({
+        severity: short_msg.toLowerCase(),
+        summary: short_msg,
+        detail: detail_msg,
+        life: 3e3
+      });
+}
+
+function getNodeFromLink(node, linkId) {
+    const linkInfo = app.graph.links[linkId];
+    return node.graph.getNodeById(linkInfo.origin_id);
+}
+
+function isMatchingNode(node, nodeType) {
+    return node.type && node.type.includes(nodeType);
+}
+
+ function findPreviousNode(node, nodeType) {	
+	if (!node) return null;		
+    const linkId = node.inputs[2]?.link;
+    if (!linkId) return null;
+    const targetNode = getNodeFromLink(node, linkId);
+    if (isMatchingNode(targetNode, nodeType)) {
+        return targetNode;
+    }
+    return null;
+}
+
+const findWidgetByName = (node, name) => {
+    return node.widgets ? node.widgets.find((w) => w.name === name) : null;
+};
+
+function find_script_load_image(width, height, reg_script="Regional Script 💬ED", load_image="LoadImage") {
+	const script_nodes = app.graph._nodes.filter( (n) => n.type.includes(reg_script));
+	let find_node_list = []
+	if (script_nodes.length) {
+		script_nodes.forEach( (n) => {
+			find_node_list.push(findPreviousNode(n, load_image));
+		});
+	}
+	if (find_node_list.length) {
+		find_node_list.forEach( (n) => {
+			if (n) ComfyApp.pasteFromClipspace(n);
+		});	
+		show_message("Info", 'Copy image to Regional Script 💬ED');
+	}
+	
+	function set_nodeWidthHeight (node_name, width_name, height_name, width, height) {
+		const node = app.graph._nodes.find((n) => n.type.includes(node_name));
+		if (node) {
+			let widget_width = findWidgetByName (node, width_name);
+			let widget_height = findWidgetByName (node, height_name);
+			widget_width.value = width;
+			widget_height.value = height;
+		}
+	}
+	
+	set_nodeWidthHeight("Efficient Loader 💬ED", "image_width", "image_height", width, height);
+	set_nodeWidthHeight("Regional Stacker 💬ED", "width", "height", width, height);
+	set_nodeWidthHeight("Regional Processor 💬ED", "width", "height", width, height);
+}
+
+function slideToImage(slide){
+	const src = slide.getAttribute('src');
+	if (!src) {
+		console.error("No src attribute found.");
+		return;
+	}
+	const urlParams = new URLSearchParams(src.split('?')[1]);
+	const filename = urlParams.get('filename');
+	const image = new Image();
+	image.src = src;
+	return [filename, image];
+}
 
 var styleSheet = document.createElement("style")
 styleSheet.type = "text/css"
@@ -285,19 +379,13 @@ class ComfyCarousel extends ComfyDialog {
 			this.btn_img_status.innerHTML = this.btn_img_text;
 		}
 	}
+	
 	show_image_status(slide) {
-		const src = slide.getAttribute('src');
-		if (!src) {
-			console.error("No src attribute found.");
-			return;
-		}
-		const urlParams = new URLSearchParams(src.split('?')[1]);
-		const filename = urlParams.get('filename');
-		const image = new Image();
-		image.src = src;
+		const [filename, image] = slideToImage(slide);
 		this.btn_img_text = "name : " + filename + "<br>width : " + image.width + "px<br>height : " + image.height + "px";
 		if (this.btn_img_status) this.btn_img_status.innerHTML = this.btn_img_text;
 	}
+
 	selectImage(slide) {
 		let active = this.getActive();
 		this.initializePanZoom(slide);
@@ -398,11 +486,28 @@ class ComfyCarousel extends ComfyDialog {
 		let load_image_ed = app.graph._nodes.find((n) => n.type === "Load Image 💬ED");
 		if (load_image_ed) {
 			ComfyApp.pasteFromClipspace(load_image_ed);
-			console.log("Copy image to Load Image ED");
+			show_message("Info", 'Copy image to Load Image 💬ED');
+		}else{
+			show_message("Info", 'Copy image to clip space');
 		}
 		this.close();
 		e.stopPropagation();
 	}
+
+	copyToRegScript(e) {
+		let active = this.getActive();
+		const slidess = [...active.parentNode.children];
+		const imageIndex = slidess.indexOf(active);
+		this.image_gallery_node.imageIndex = imageIndex;
+		ComfyApp.copyToClipspace(this.image_gallery_node);
+		ComfyApp.clipspace_return_node = null;
+		this.image_gallery_node.setDirtyCanvas(true);
+		const [filename, image] = slideToImage(active);
+		find_script_load_image(image.width, image.height);
+		this.close();
+		e.stopPropagation();
+	}
+
 
 	openMaskEditor(e) {
 		let active = this.getActive();
@@ -451,12 +556,14 @@ class ComfyCarousel extends ComfyDialog {
 	show(images, activeIndex, node) {
 		let slides = [];
 		let dots = [];
+
 		this.is_enter = true;
 		this.is_closed = false;
 		this.btn_img_status = null;
 		this.btn_img_text = "";
 		this.image_gallery_node = node;
-		this.is_load_image_node = (node.type.indexOf("Load Image") != -1);
+		this.is_load_image_node = node.type.includes("Load Image") || node.type.includes("LoadImage");
+		this.regional_script = app.graph._nodes.find((n) => n.type.includes("Regional Script 💬ED"));
 		this.zoom_ratio = 1.0;
 		this.pan_x = 0;
 		this.pan_y = 0;
@@ -474,60 +581,41 @@ class ComfyCarousel extends ComfyDialog {
 			slide._dot = dot;
 			dots.push(dot);
 
-			if (slides.length - 1 == activeIndex)
+			if (slides.length - 1 === activeIndex) {
 				this.selectImage(slide);
+			}
 		}
 
-		let carousel;
+		const createButton = (className, iconClassName, eventHandler) => 
+			$el(`button.${className}`, {
+				$: (el) => el.addEventListener('click', eventHandler)
+			}, iconClassName ? [$el(`icon.${iconClassName}`, {})] : []);
+
+		const carouselContent = [
+			$el("div.slides", {
+				$: (el) => {
+					el.addEventListener('pointermove', (e) => this.pointMoveEvent(e));
+					el.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
+					el.addEventListener('pointerup', (e) => this.handlePointerUp(e));
+				},
+			}, slides),
+			$el("div.dots", {}, dots),
+			createButton("ig-ed-status", null, () => {}),
+			createButton("ig-ed-prev", "ig-ed-prev-icon", (e) => this.prevSlide(e)),
+			createButton("ig-ed-next", "ig-ed-next-icon", (e) => this.nextSlide(e)),
+			createButton("ig-ed-close", "ig-ed-close-icon", (e) => this.close()),
+		];
+
 		if (this.is_load_image_node) {
-			carousel = $el("div.comfy-carousel-box", {}, [
-				$el("div.slides", {
-					$: (el) => {
-						el.addEventListener('pointermove', (e) => this.pointMoveEvent(e));
-						el.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
-						el.addEventListener('pointerup', (e) => this.handlePointerUp(e));
-					},
-				}, slides),
-				$el("div.dots", {}, dots),
-				$el("button.ig-ed-status", {}, ),
-				$el("button.ig-ed-prev", {
-					$: (el) => el.addEventListener('click', (e) => this.prevSlide(e)),
-				}, [$el('icon.ig-ed-prev-icon', {}, )]),
-				$el("button.ig-ed-next", {
-					$: (el) => el.addEventListener('click', (e) => this.nextSlide(e)),
-				}, [$el('icon.ig-ed-next-icon', {}, )]),
-				$el("button.ig-ed-close", {
-					$: (el) => el.addEventListener('click', (e) => this.close()),
-				}, [$el('icon.ig-ed-close-icon', {}, )]),
-				$el("button.ig-ed-maskedit", {
-					$: (el) => el.addEventListener('click', (e) => this.openMaskEditor(e)),
-				}, [$el('icon.ig-ed-maskedit-icon', {}, )]),
-			]);
+			carouselContent.push(createButton("ig-ed-maskedit", "ig-ed-maskedit-icon", (e) => this.openMaskEditor(e)));
 		} else {
-			carousel = $el("div.comfy-carousel-box", {}, [
-				$el("div.slides", {
-					$: (el) => {
-						el.addEventListener('pointermove', (e) => this.pointMoveEvent(e));
-						el.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
-						el.addEventListener('pointerup', (e) => this.handlePointerUp(e));
-					},
-				}, slides),
-				$el("div.dots", {}, dots),
-				$el("button.ig-ed-status", {}, ),
-				$el("button.ig-ed-prev", {
-					$: (el) => el.addEventListener('click', (e) => this.prevSlide(e)),
-				}, [$el('icon.ig-ed-prev-icon', {}, )]),
-				$el("button.ig-ed-next", {
-					$: (el) => el.addEventListener('click', (e) => this.nextSlide(e)),
-				}, [$el('icon.ig-ed-next-icon', {}, )]),
-				$el("button.ig-ed-close", {
-					$: (el) => el.addEventListener('click', (e) => this.close()),
-				}, [$el('icon.ig-ed-close-icon', {}, )]),
-				$el("button.ig-ed-copy", {
-					$: (el) => el.addEventListener('click', (e) => this.copyToClip(e)),
-				}, [$el('icon.ig-ed-copy-icon', {}, )]),
-			]);
+			carouselContent.push(createButton("ig-ed-copy", "ig-ed-copy-icon", (e) => this.copyToClip(e)));
 		}
+		if (this.regional_script){
+			carouselContent.push(createButton("ig-ed-multi_paste", "ig-ed-multi_paste-icon", (e) => this.copyToRegScript(e)));
+		}
+
+		const carousel = $el("div.comfy-carousel-box", {}, carouselContent);
 		super.show(carousel);
 
 		document.addEventListener("keydown", this.onKeydown);
