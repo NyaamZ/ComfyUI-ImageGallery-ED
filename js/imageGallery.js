@@ -1,7 +1,16 @@
 import { app } from "/scripts/app.js";
 import { $el, ComfyDialog } from "/scripts/ui.js";
 import { ComfyApp } from "../../scripts/app.js";
-import { bo as useToastStore } from "../../assets/index-DIU5yZe9.js";
+// import { bo as useToastStore } from "../../assets/index-DIU5yZe9.js";
+
+function show_message(short_msg, detail_msg) {
+	// useToastStore().add({
+        // severity: short_msg.toLowerCase(),
+        // summary: short_msg,
+        // detail: detail_msg,
+        // life: 3e3
+      // });
+}
 
 var styles = `
 .comfy-carousel {
@@ -261,15 +270,6 @@ var styles = `
 	border: 1px solid white;
 }
 `
-
-function show_message(short_msg, detail_msg) {
-	useToastStore().add({
-        severity: short_msg.toLowerCase(),
-        summary: short_msg,
-        detail: detail_msg,
-        life: 3e3
-      });
-}
 
 function getNodeFromLink(node, linkId) {
     const linkInfo = app.graph.links[linkId];
