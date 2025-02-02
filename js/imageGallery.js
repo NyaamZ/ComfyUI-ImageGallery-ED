@@ -3,7 +3,12 @@ import { $el, ComfyDialog } from "/scripts/ui.js";
 import { ComfyApp } from "../../scripts/app.js";
 // import { bo as useToastStore } from "../../assets/index-DIU5yZe9.js";
 
-function show_message(short_msg, detail_msg) {
+function show_message(short_msg, detail_msg, node=null) {
+	if (node) {
+		console.log("## " + detail_msg + " ID:" + node.id);
+	} else {
+		console.log("## " + detail_msg);	
+	}
 	// useToastStore().add({
         // severity: short_msg.toLowerCase(),
         // summary: short_msg,
@@ -483,12 +488,12 @@ class ComfyCarousel extends ComfyDialog {
 		ComfyApp.copyToClipspace(this.image_gallery_node);
 		ComfyApp.clipspace_return_node = null;
 		this.image_gallery_node.setDirtyCanvas(true);
-		let load_image_ed = app.graph._nodes.find((n) => n.type === "Load Image 💬ED");
+		let load_image_ed = app.graph._nodes.find((n) => n.type === "Load Image 💬ED" && n.mode === 0);
 		if (load_image_ed) {
 			ComfyApp.pasteFromClipspace(load_image_ed);
-			show_message("Info", 'Copy image to Load Image 💬ED');
+			show_message("Info", 'Copy image to Load Image 💬ED', load_image_ed);
 		}else{
-			show_message("Info", 'Copy image to clip space');
+			show_message("Info", 'Copy image to clip space', load_image_ed);
 		}
 		this.close();
 		e.stopPropagation();
