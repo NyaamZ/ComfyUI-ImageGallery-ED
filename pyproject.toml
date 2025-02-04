@@ -12,4 +12,4 @@ Repository = "https://github.com/NyaamZ/ComfyUI-ImageGallery-ED"
 [tool.comfy]
 PublisherId = "NyaamZ"
 DisplayName = "ComfyUI ImageGallery ExtendeD"
-Icon = ""
+Icon = "https://upload.wikimedia.org/wikipedia/commons/8/87/Magnifying_glass_icon_mgx2.svg"
