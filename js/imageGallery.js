@@ -3,6 +3,8 @@ import { $el, ComfyDialog } from "/scripts/ui.js";
 import { ComfyApp } from "../../scripts/app.js";
 // import { bo as useToastStore } from "../../assets/index-DIU5yZe9.js";
 
+// 617e690f-9398-4335-9aef-db608f0de28b
+
 function show_message(short_msg, detail_msg, node=null) {
 	if (node) {
 		console.log("## " + detail_msg + " ID:" + node.id);
