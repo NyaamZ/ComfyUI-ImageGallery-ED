@@ -1,5 +1,5 @@
 [project]
-name = "ComfyUI-ImageGallery-ED"
+name = "comfyui-imagegallery-ED"
 description = "Custom javascript extensions for better UX for ComfyUI. Double click on image to open. It's convenient for checking images."
 version = "0.7.0"
 license = { file = "LICENSE" }
