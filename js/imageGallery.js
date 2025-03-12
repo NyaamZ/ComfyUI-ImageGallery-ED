@@ -1,22 +1,21 @@
 import { app } from "/scripts/app.js";
 import { $el, ComfyDialog } from "/scripts/ui.js";
 import { ComfyApp } from "../../scripts/app.js";
-// import { bo as useToastStore } from "../../assets/index-DIU5yZe9.js";
 
 // 617e690f-9398-4335-9aef-db608f0de28b
 
-function show_message(short_msg, detail_msg, node=null) {
-	if (node) {
-		console.log("## " + detail_msg + " ID:" + node.id);
-	} else {
-		console.log("## " + detail_msg);	
+function show_message(short_msg, detail_msg, node=null) {	
+	try {
+		app.extensionManager.toast.add({
+			severity: short_msg.toLowerCase(),
+			summary: short_msg,
+			detail: detail_msg,
+			life: 3500
+		});
 	}
-	// useToastStore().add({
-        // severity: short_msg.toLowerCase(),
-        // summary: short_msg,
-        // detail: detail_msg,
-        // life: 3e3
-      // });
+	catch {
+		// do nothing
+	}
 }
 
 var styles = `
@@ -314,7 +313,7 @@ function find_script_load_image(width, height, reg_script="Regional Script 💬E
 		find_node_list.forEach( (n) => {
 			if (n) ComfyApp.pasteFromClipspace(n);
 		});	
-		show_message("Info", 'Copy image to Regional Script 💬ED');
+		show_message("Info", 'Image copied to Regional Script 💬ED');
 	}
 	
 	function set_nodeWidthHeight (node_name, width_name, height_name, width, height) {
@@ -493,9 +492,9 @@ class ComfyCarousel extends ComfyDialog {
 		let load_image_ed = app.graph._nodes.find((n) => n.type === "Load Image 💬ED" && n.mode === 0);
 		if (load_image_ed) {
 			ComfyApp.pasteFromClipspace(load_image_ed);
-			show_message("Info", 'Copy image to Load Image 💬ED', load_image_ed);
+			show_message("Info", 'Image copied to Load Image 💬ED', load_image_ed);
 		}else{
-			show_message("Info", 'Copy image to clip space', load_image_ed);
+			show_message("Info", 'Image copied to Clipspace', load_image_ed);
 		}
 		this.close();
 		e.stopPropagation();
