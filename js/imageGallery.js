@@ -286,7 +286,7 @@ function isMatchingNode(node, nodeType) {
     return node.type && node.type.includes(nodeType);
 }
 
- function findPreviousNode(node, nodeType) {	
+function findPreviousNode(node, nodeType) {	
 	if (!node) return null;		
     const linkId = node.inputs[2]?.link;
     if (!linkId) return null;
@@ -364,9 +364,19 @@ class ComfyCarousel extends ComfyDialog {
 		});
 		this.onKeydown = this.onKeydown.bind(this);
 	}
+	
+	before_exit() {
+		const active = this.getActive();
+		const slidess = [...active.parentNode.children];
+		const imageIndex = slidess.indexOf(active);
+		this.image_gallery_node.imageIndex = imageIndex;
+		this.image_gallery_node.setDirtyCanvas(true);
+		return active;
+	}
+	
 	close() {
 		document.removeEventListener("keydown", this.onKeydown);
-		let active = this.getActive();
+		const active = this.before_exit();
 		active.classList.add('exit');
 		this.element.style.animation = `fadeOutCarousel 0.4s`;
 		this.is_closed = true;
@@ -482,13 +492,9 @@ class ComfyCarousel extends ComfyDialog {
 	}
 
 	copyToClip(e) {
-		let active = this.getActive();
-		const slidess = [...active.parentNode.children];
-		const imageIndex = slidess.indexOf(active);
-		this.image_gallery_node.imageIndex = imageIndex;
+		const active = this.before_exit();
 		ComfyApp.copyToClipspace(this.image_gallery_node);
-		ComfyApp.clipspace_return_node = null;
-		this.image_gallery_node.setDirtyCanvas(true);
+		ComfyApp.clipspace_return_node = null;		
 		let load_image_ed = app.graph._nodes.find((n) => n.type === "Load Image 💬ED" && n.mode === 0);
 		if (load_image_ed) {
 			ComfyApp.pasteFromClipspace(load_image_ed);
@@ -501,28 +507,19 @@ class ComfyCarousel extends ComfyDialog {
 	}
 
 	copyToRegScript(e) {
-		let active = this.getActive();
-		const slidess = [...active.parentNode.children];
-		const imageIndex = slidess.indexOf(active);
-		this.image_gallery_node.imageIndex = imageIndex;
+		const active = this.before_exit();
 		ComfyApp.copyToClipspace(this.image_gallery_node);
-		ComfyApp.clipspace_return_node = null;
-		this.image_gallery_node.setDirtyCanvas(true);
+		ComfyApp.clipspace_return_node = null;		
 		const [filename, image] = slideToImage(active);
 		find_script_load_image(image.width, image.height);
 		this.close();
 		e.stopPropagation();
 	}
 
-
 	openMaskEditor(e) {
-		let active = this.getActive();
-		const slidess = [...active.parentNode.children];
-		const imageIndex = slidess.indexOf(active);
-		this.image_gallery_node.imageIndex = imageIndex;
+		const active = this.before_exit();
 		ComfyApp.copyToClipspace(this.image_gallery_node);
 		ComfyApp.clipspace_return_node = this.image_gallery_node;
-		this.image_gallery_node.setDirtyCanvas(true);
 		this.close();
 		ComfyApp.open_maskeditor();
 		e.stopPropagation();
@@ -629,45 +626,63 @@ class ComfyCarousel extends ComfyDialog {
 	}
 }
 
-app.registerExtension({
-	name: "Comfy.ImageGallery",
-	init() {
+const CANVAS_IMAGE_PREVIEW_WIDGET = "$$canvas-image-preview";
+
+class ImageGalleryInit extends EventTarget {
+    constructor() {
+        super();
 		app.ui.carousel = new ComfyCarousel();
-	},
-	beforeRegisterNodeDef(nodeType, nodeData) {
-		function isImageClick(node, pos) {
-			// This follows the logic of getImageTop() in ComfyUI
-			let imageY;
-			if (node.imageOffset)
-				imageY = node.imageOffset;
-			else if (node.widgets?.length) {
-				const widget = node.widgets[node.widgets.length - 1];
-				imageY = widget.last_y;
-				if (widget.computeSize)
-					imageY += widget.computeSize()[1] + 4;
-				else if (widget.computedHeight)
-					imageY += widget.computedHeight;
-				else
-					imageY += LiteGraph.NODE_WIDGET_HEIGHT + 4;
-			} else
-				imageY = node.computeSize()[1];
+        this.overrideProcessMouseDown();
+    }
+  
+	isImageClick(node, pos) {
+		// This follows the logic of getImageTop() in ComfyUI
+		let imageY;
+		if (node.imageOffset)
+			imageY = node.imageOffset;
+		else if (node.widgets?.length) {
+			const widget = node.widgets[node.widgets.length - 1];
+			imageY = widget.last_y;
+			if (widget.computeSize)
+				imageY += widget.computeSize()[1] + 4;
+			else if (widget.computedHeight)
+				imageY += widget.computedHeight;
+			else
+				imageY += LiteGraph.NODE_WIDGET_HEIGHT + 4;
+		} else
+			imageY = node.computeSize()[1];
 
-			return pos[1] >= imageY;
-		}
+		return pos[1] >= imageY;
+	}  
 
-		const origOnDblClick = nodeType.prototype.onDblClick;
-		nodeType.prototype.onDblClick = function(e, pos, ...args) {
-			if (this.imgs && this.imgs.length && isImageClick(this, pos)) {
-				let imageIndex = 0;
-				if (this.imageIndex !== null)
-					imageIndex = this.imageIndex;
-				else if (this.overIndex !== null)
-					imageIndex = this.overIndex;
-				app.ui.carousel.show(this.imgs, imageIndex, this);
-			}
+    overrideProcessMouseDown() {
+        const originalProcessMouseDown = LGraphCanvas.prototype.processMouseDown;
+        const self = this;
 
-			if (origOnDblClick)
-				origOnDblClick.call(this, e, pos, ...args);
-		}
-	},
-});
+        LGraphCanvas.prototype.processMouseDown = function (event) {
+            const returnVal = originalProcessMouseDown.apply(this, arguments);
+            self.handleMouseDown(event, this);
+            return returnVal;
+        };
+    }
+
+    handleMouseDown(event, canvas) {
+        const { graph, pointer } = canvas;
+        const { canvasX: x, canvasY: y } = event;
+        const node = graph.getNodeOnPos(x, y, canvas.visible_nodes);
+        if (!node || !(canvas.allow_interaction || node.flags.allow_interaction)) return;
+        
+        const pos = [x - node.pos[0], y - node.pos[1]];
+        const widget = node.getWidgetOnPos(x, y);
+
+        if (node.imgs?.length && (widget?.name === CANVAS_IMAGE_PREVIEW_WIDGET || this.isImageClick(node, pos))) {
+            pointer.onDoubleClick = () => {
+                let imageIndex = node.imageIndex ?? node.overIndex ?? 0;
+                app.ui.carousel.show(node.imgs, imageIndex, node);
+            };
+        }
+    }
+}
+
+export const imageGalleryInit = new ImageGalleryInit();
+window.imageGalleryInit = imageGalleryInit;
