@@ -369,8 +369,10 @@ class ComfyCarousel extends ComfyDialog {
 		const active = this.getActive();
 		const slidess = [...active.parentNode.children];
 		const imageIndex = slidess.indexOf(active);
-		this.image_gallery_node.imageIndex = imageIndex;
-		this.image_gallery_node.setDirtyCanvas(true);
+		if (this.image_gallery_node.imgs?.length >= imageIndex) {
+			this.image_gallery_node.imageIndex = imageIndex;
+			this.image_gallery_node.setDirtyCanvas(true);
+		}
 		return active;
 	}
 	
@@ -556,7 +558,7 @@ class ComfyCarousel extends ComfyDialog {
 			this.openMaskEditor(e);
 	}
 
-	show(images, activeIndex, node) {
+	show(node, activeIndex) {
 		let slides = [];
 		let dots = [];
 
@@ -571,7 +573,7 @@ class ComfyCarousel extends ComfyDialog {
 		this.pan_x = 0;
 		this.pan_y = 0;
 
-		for (let image of images) {
+		for (let image of node.imgs) {
 			let slide = image.cloneNode(true);
 			slide.draggable = false;
 			slides.push(slide);
@@ -678,7 +680,7 @@ class ImageGalleryInit extends EventTarget {
         if (node.imgs?.length && (widget?.name === CANVAS_IMAGE_PREVIEW_WIDGET || this.isImageClick(node, pos))) {
             pointer.onDoubleClick = () => {
                 let imageIndex = node.imageIndex ?? node.overIndex ?? 0;
-                app.ui.carousel.show(node.imgs, imageIndex, node);
+                app.ui.carousel.show(node, imageIndex);
             };
         }
     }
