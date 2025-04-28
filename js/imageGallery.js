@@ -677,7 +677,8 @@ class ImageGalleryInit extends EventTarget {
         const pos = [x - node.pos[0], y - node.pos[1]];
         const widget = node.getWidgetOnPos(x, y);
 
-        if (node.imgs?.length && (widget?.name === CANVAS_IMAGE_PREVIEW_WIDGET || this.isImageClick(node, pos))) {
+        //if (node.imgs?.length && (widget?.name === CANVAS_IMAGE_PREVIEW_WIDGET || this.isImageClick(node, pos))) {
+		if (node.imgs?.length && (widget?.name === CANVAS_IMAGE_PREVIEW_WIDGET)) {
             pointer.onDoubleClick = () => {
                 let imageIndex = node.imageIndex ?? node.overIndex ?? 0;
                 app.ui.carousel.show(node, imageIndex);
