@@ -686,3 +686,4 @@ class ImageGalleryInit extends EventTarget {
 
 export const imageGalleryInit = new ImageGalleryInit();
 window.imageGalleryInit = imageGalleryInit;
+
