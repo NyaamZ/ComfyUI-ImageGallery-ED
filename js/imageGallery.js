@@ -277,16 +277,17 @@ var styles = `
 }
 `
 
-function getNodeFromLink(node, linkId) {
-    const linkInfo = app.graph.links[linkId];
-    return node.graph.getNodeById(linkInfo.origin_id);
-}
-
-function isMatchingNode(node, nodeType) {
-    return node.type && node.type.includes(nodeType);
-}
-
 function findPreviousNode(node, nodeType) {	
+
+	function getNodeFromLink(node, linkId) {
+		const linkInfo = app.graph.links[linkId];
+		return node.graph.getNodeById(linkInfo.origin_id);
+	}
+
+	function isMatchingNode(node, nodeType) {
+		return node.type?.includes(nodeType);
+	}
+
 	if (!node) return null;		
     const linkId = node.inputs[2]?.link;
     if (!linkId) return null;
@@ -354,7 +355,7 @@ class ComfyCarousel extends ComfyDialog {
 		super();
 		this.element.classList.remove("comfy-modal");
 		this.element.classList.add("comfy-carousel");
-		//this.element.addEventListener('click', (e) => this.clickExit(e));
+		this.element.addEventListener('click', (e) => this.clickExit(e));
 		this.element.addEventListener('wheel', (e) => this.zoomInOut(e));
 		this.element.addEventListener("animationend", (e) => {
 			if (this.is_closed) {
@@ -382,9 +383,6 @@ class ComfyCarousel extends ComfyDialog {
 		active.classList.add('exit');
 		this.element.style.animation = `fadeOutCarousel 0.4s`;
 		this.is_closed = true;
-	}
-	createButtons() {
-		return [];
 	}
 
 	getActive() {
@@ -528,13 +526,13 @@ class ComfyCarousel extends ComfyDialog {
 	}
 
 	onKeydown(e) {
-		if (e.key == "Escape")
+		if (e.key == "Escape"){
 			this.close();
-		else if (e.key == "ArrowLeft" || e.key == "q" || e.key == "Q")
+		} else if (e.key == "ArrowLeft" || e.key == "q" || e.key == "Q"){
 			this.prevSlide(e);
-		else if (e.key == "ArrowRight" || e.key == "e" || e.key == "E")
+		} else if (e.key == "ArrowRight" || e.key == "e" || e.key == "E"){
 			this.nextSlide(e);
-		else if (e.key == "ArrowUp") {
+		} else if (e.key == "ArrowUp") {
 			this.zoom_ratio = Math.min(10.0, this.zoom_ratio + 0.2);
 			this.invalidatePanZoom();
 		} else if (e.key == "ArrowDown") {
@@ -572,6 +570,8 @@ class ComfyCarousel extends ComfyDialog {
 		this.zoom_ratio = 1.0;
 		this.pan_x = 0;
 		this.pan_y = 0;
+
+		app.canvas.deselectAllNodes();
 
 		for (let image of node.imgs) {
 			let slide = image.cloneNode(true);
