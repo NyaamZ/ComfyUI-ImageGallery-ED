@@ -373,6 +373,9 @@ class ComfyCarousel extends ComfyDialog {
 		if (this.image_gallery_node.imgs?.length >= imageIndex) {
 			this.image_gallery_node.imageIndex = imageIndex;
 			this.image_gallery_node.setDirtyCanvas(true);
+		}else{
+			this.image_gallery_node.imageIndex = 0;
+			this.image_gallery_node.setDirtyCanvas(true);
 		}
 		return active;
 	}
