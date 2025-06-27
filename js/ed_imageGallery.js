@@ -3,7 +3,7 @@ import { $el, ComfyDialog } from "/scripts/ui.js";
 import { ComfyApp } from "../../scripts/app.js";
 
 // 617e690f-9398-4335-9aef-db608f0de28b
-
+//
 function show_message(short_msg, detail_msg, node=null) {	
 	try {
 		app.extensionManager.toast.add({
