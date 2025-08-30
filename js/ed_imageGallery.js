@@ -638,7 +638,7 @@ class ImageGalleryInit extends EventTarget {
         this.overrideProcessMouseDown();
     }
   
-	isImageClick(node, pos) {
+/* 	isImageClick(node, pos) {
 		// This follows the logic of getImageTop() in ComfyUI
 		let imageY;
 		if (node.imageOffset)
@@ -656,7 +656,7 @@ class ImageGalleryInit extends EventTarget {
 			imageY = node.computeSize()[1];
 
 		return pos[1] >= imageY;
-	}  
+	}   */
 
     overrideProcessMouseDown() {
         const originalProcessMouseDown = LGraphCanvas.prototype.processMouseDown;
@@ -678,7 +678,8 @@ class ImageGalleryInit extends EventTarget {
         const pos = [x - node.pos[0], y - node.pos[1]];
         const widget = node.getWidgetOnPos(x, y);
 
-        if (node.imgs?.length && (widget?.constructor.name === "ImagePreviewWidget" || this.isImageClick(node, pos))) {
+        // if (node.imgs?.length && (widget?.constructor.name === "ImagePreviewWidget" || this.isImageClick(node, pos))) {
+		if (node.imgs?.length && (widget?.constructor.name === "ImagePreviewWidget")) {
             pointer.onDoubleClick = () => {
                 let imageIndex = node.imageIndex ?? node.overIndex ?? 0;
                 app.ui.carousel.show(node, imageIndex);
